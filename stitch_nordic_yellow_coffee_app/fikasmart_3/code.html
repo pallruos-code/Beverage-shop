@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ตะกร้าสินค้าของคุณ - FikaSmart</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#93000a",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-high": "#e9e8e7",
+                      "error": "#CC0008",
+                      "on-primary-container": "#8aa4ff",
+                      "inverse-on-surface": "#f2f0f0",
+                      "primary": "#002068",
+                      "on-primary": "#ffffff",
+                      "surface-variant": "#e3e2e2",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#045300",
+                      "outline": "#747684",
+                      "tertiary": "#012f00",
+                      "surface-tint": "#3557bc",
+                      "secondary-fixed-dim": "#e7c400",
+                      "text-primary": "#111111",
+                      "secondary-fixed": "#ffe164",
+                      "on-primary-fixed-variant": "#153ea3",
+                      "surface": "#FFFFFF",
+                      "on-secondary-container": "#705e00",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#303031",
+                      "inverse-primary": "#b5c4ff",
+                      "tertiary-container": "#034800",
+                      "outline-variant": "#c4c5d5",
+                      "on-surface": "#1b1c1c",
+                      "on-primary-fixed": "#00164e",
+                      "on-background": "#1b1c1c",
+                      "on-tertiary-fixed": "#012200",
+                      "surface-container-low": "#f5f3f3",
+                      "on-secondary-fixed": "#221b00",
+                      "border": "#DFDFDF",
+                      "text-secondary": "#484848",
+                      "secondary-container": "#fdd816",
+                      "on-secondary-fixed-variant": "#544600",
+                      "surface-container": "#efeded",
+                      "on-surface-variant": "#444653",
+                      "background": "#F5F5F5",
+                      "primary-fixed": "#dce1ff",
+                      "surface-bright": "#fbf9f9",
+                      "tertiary-fixed": "#8afc71",
+                      "secondary": "#6f5d00",
+                      "warning": "#E87400",
+                      "tertiary-fixed-dim": "#6edf58",
+                      "primary-hover": "#002B80",
+                      "surface-container-highest": "#e3e2e2",
+                      "error-container": "#ffdad6",
+                      "surface-dim": "#dbdad9",
+                      "on-secondary": "#ffffff",
+                      "primary-container": "#003399",
+                      "primary-fixed-dim": "#b5c4ff",
+                      "on-tertiary-container": "#4ebe3c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "lg": "24px",
+                      "base": "4px",
+                      "gutter-desktop": "20px",
+                      "gutter-mobile": "8px",
+                      "xxl": "64px",
+                      "sm": "12px",
+                      "container-max": "1400px",
+                      "md": "16px",
+                      "xs": "8px"
+              },
+              "fontFamily": {
+                      "body-sm": [
+                              "Noto Sans"
+                      ],
+                      "h1-mobile": [
+                              "Noto Sans"
+                      ],
+                      "h1": [
+                              "Noto Sans"
+                      ],
+                      "h3": [
+                              "Noto Sans"
+                      ],
+                      "body": [
+                              "Noto Sans"
+                      ],
+                      "label": [
+                              "Noto Sans"
+                      ],
+                      "h2": [
+                              "Noto Sans"
+                      ],
+                      "product-name": [
+                              "Noto Sans"
+                      ],
+                      "price": [
+                              "Noto Sans"
+                      ],
+                      "dimensions": [
+                              "JetBrains Mono"
+                      ],
+                      "caption": [
+                              "Noto Sans"
+                      ],
+                      "display": [
+                              "Noto Sans"
+                      ]
+              },
+              "fontSize": {
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "21px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h1-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "h1": [
+                              "32px",
+                              {
+                                      "lineHeight": "41.6px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "h3": [
+                              "18px",
+                              {
+                                      "lineHeight": "23.4px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label": [
+                              "15px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "h2": [
+                              "24px",
+                              {
+                                      "lineHeight": "31.2px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "product-name": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "price": [
+                              "24px",
+                              {
+                                      "lineHeight": "31.2px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "dimensions": [
+                              "14px",
+                              {
+                                      "lineHeight": "21px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "caption": [
+                              "12px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display": [
+                              "40px",
+                              {
+                                      "lineHeight": "52px",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background font-body text-body antialiased selection:bg-secondary-container selection:text-on-secondary-container min-h-screen pb-xxl">
+<!-- TopNavBar -->
+<nav class="bg-primary dark:bg-primary text-on-primary dark:text-on-primary font-label text-label fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter-desktop max-w-container-max mx-auto h-[64px] docked full-width top-0 border-b border-outline-variant flat no shadows hidden md:flex">
+<div class="flex items-center gap-xl">
+<div class="font-h2 text-h2 text-on-primary tracking-tight">FikaSmart</div>
+<!-- Search Bar Simulation -->
+<div class="relative w-64 hidden lg:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-primary opacity-70">search</span>
+<input class="w-full bg-primary-hover border-none rounded-DEFAULT py-xs pl-xl pr-sm text-on-primary placeholder:text-on-primary placeholder:opacity-50 focus:ring-2 focus:ring-secondary-fixed outline-none text-body-sm font-body-sm h-10 transition-colors" placeholder="Search..." type="text"/>
+</div>
+</div>
+<ul class="flex gap-lg items-center">
+<li><a class="text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-sm py-xs rounded-DEFAULT" href="#">Offers</a></li>
+<li><a class="text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-sm py-xs rounded-DEFAULT" href="#">Sustainability</a></li>
+<li><a class="text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-sm py-xs rounded-DEFAULT" href="#">Find Us</a></li>
+</ul>
+<div class="flex items-center gap-md">
+<button class="p-xs text-secondary-fixed font-bold border-b-2 border-secondary-fixed hover:bg-primary-hover transition-colors Active: opacity-90 transition-all rounded-DEFAULT flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="shopping_cart" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+</button>
+<button class="p-xs text-on-primary opacity-80 hover:bg-primary-hover transition-colors rounded-DEFAULT flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="max-w-container-max mx-auto px-gutter-mobile md:px-gutter-desktop pt-[88px] md:pt-[104px]">
+<header class="mb-lg md:mb-xl border-b border-border pb-md">
+<h1 class="font-h1-mobile text-h1-mobile md:font-h1 md:text-h1 text-text-primary">ตะกร้าสินค้าของคุณ</h1>
+</header>
+<div class="flex flex-col lg:flex-row gap-xl">
+<!-- Cart Items List -->
+<div class="flex-grow flex flex-col gap-md">
+<!-- Cart Item 1 -->
+<article class="bg-surface border border-border p-md flex gap-md items-start shadow-sm transition-shadow hover:shadow-md">
+<div class="w-24 h-24 bg-surface-container-low shrink-0 relative">
+<img class="w-full h-full object-cover absolute inset-0" data-alt="A top-down studio shot of a perfectly poured Nordic Oat Latte in a minimalist white ceramic mug. The coffee surface features intricate latte art, set against a pristine, brightly lit, light grey background indicating a modern, clean Scandinavian aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_TAVWBckCNqSJXBkhLM4C7HLCiUQlgmyQMLEHiIsV6aS0gDbmHHB_JNZ9yHbQrSzM6OABB-u2-AicHwtvVdufI-ne33cl5TbHYGIYD2iwmAUT5OleYnrZHBuvgPp9diuuYW2TFyLnsEHcAXZE6sAkEjCB6rUk9KBlL52t18jbMedsfNy-oA9NXR_ecEei5rugRIeQykgTLejmCfWFMGq1C7JAH8hXJ6ueizSOyDHSBOQW9YfifWrZmUCjFzmkwy181H_Oh2Bmh5U"/>
+</div>
+<div class="flex-grow flex flex-col justify-between h-full min-h-[96px]">
+<div>
+<div class="flex justify-between items-start mb-xs">
+<h3 class="font-product-name text-product-name text-text-primary">นอร์ดิกโอ๊ตลาเต้</h3>
+<span class="font-price text-price text-text-primary whitespace-nowrap ml-md">$4.80</span>
+</div>
+<ul class="font-caption text-caption text-text-secondary flex flex-col gap-1 mb-sm">
+<li class="flex items-center gap-xs"><span class="w-1 h-1 rounded-full bg-outline"></span> ความหวาน 100%</li>
+<li class="flex items-center gap-xs"><span class="w-1 h-1 rounded-full bg-outline"></span> +ท็อปปิ้งน้ำผึ้งแท้ <span class="text-outline-variant">(+฿10)</span></li>
+</ul>
+</div>
+<div class="flex justify-between items-center mt-auto pt-sm border-t border-border border-dashed">
+<!-- Quantity Stepper -->
+<div class="flex items-center border border-border rounded w-[100px] h-10 overflow-hidden bg-surface">
+<button class="w-10 h-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors active:bg-surface-variant">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<span class="flex-1 text-center font-dimensions text-dimensions text-text-primary border-x border-border h-full flex items-center justify-center">1</span>
+<button class="w-10 h-full flex items-center justify-center text-primary hover:bg-surface-container-low transition-colors active:bg-surface-variant">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+<button class="text-error font-label text-label flex items-center gap-xs hover:bg-error-container hover:text-on-error-container px-sm py-xs rounded transition-colors group">
+<span class="material-symbols-outlined text-[18px] group-hover:scale-110 transition-transform">delete</span>
+<span>ลบออก</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+<!-- Order Summary Sidebar -->
+<aside class="w-full lg:w-[380px] shrink-0">
+<div class="bg-surface border border-border p-lg sticky top-[88px] shadow-sm">
+<h2 class="font-h3 text-h3 text-text-primary mb-lg border-b border-border pb-xs">สรุปรายการสั่งซื้อ</h2>
+<div class="flex flex-col gap-sm font-body text-body text-text-secondary mb-lg">
+<div class="flex justify-between">
+<span>ยอดรวมสินค้า</span>
+<span class="font-dimensions text-dimensions text-text-primary">$4.80</span>
+</div>
+<div class="flex justify-between">
+<span>ภาษีโดยประมาณ</span>
+<span class="font-dimensions text-dimensions text-text-primary">$0.00</span>
+</div>
+</div>
+<div class="flex justify-between items-center border-t border-border pt-md mb-lg">
+<span class="font-h3 text-h3 text-text-primary">ยอดสุทธิ</span>
+<span class="font-price text-price text-text-primary">$4.80</span>
+</div>
+<button class="w-full h-[44px] bg-secondary-container text-on-secondary-container font-label text-label hover:bg-secondary-fixed hover:shadow-md transition-all flex items-center justify-center gap-xs active:scale-[0.98]">
+                        ดำเนินการชำระเงิน
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<p class="font-caption text-caption text-text-secondary text-center mt-md flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">lock</span> การเชื่อมต่อที่ปลอดภัย
+                    </p>
+</div>
+</aside>
+</div>
+<!-- Recommended Section -->
+<section class="mt-xxl border-t border-border pt-xl">
+<h2 class="font-h2 text-h2 text-text-primary mb-lg">เมนูแนะนำสำหรับคุณ</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md md:gap-lg">
+<!-- Rec Item 1 -->
+<div class="bg-surface border border-border p-sm flex flex-col group cursor-pointer hover:shadow-md transition-shadow">
+<div class="w-full aspect-square bg-surface-container-low mb-sm overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 absolute inset-0" data-alt="A warm, inviting close-up shot of a freshly baked, golden-brown Swedish cinnamon bun (kanelbulle) sprinkled with pearl sugar, resting on a white minimal plate in bright natural light, reflecting a clean modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvXwm2Y3cwID_EH0Tpi595xT4HJdmlQayFkdsHTqN_ldKUFpOuJjSgqbmpjU_fG3EwTMiDUPNiYuD2RgPGmkQY8aMGeO627Jr-75MiTpkzuZJCHEDQCDuG4t1XLQ7TUqyrHtzisLopM6OgrxjA3Zio9EV6XjEjAIDIQfZhx5oA13j1dfAxYb7L-G26jRNI5LgM7g11swH2MAtRS7cLJ__fvZIoyc9FoIctP9ERAfkzhgJ6w8wXfyfRbGnKBe8vkKjVLQy5HAu2wYM"/>
+</div>
+<h4 class="font-product-name text-product-name text-text-primary mb-xs">ซินนามอนบัน</h4>
+<div class="mt-auto flex justify-between items-center">
+<span class="font-price text-body text-text-primary font-bold">$3.50</span>
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-primary-hover transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<!-- Rec Item 2 -->
+<div class="bg-surface border border-border p-sm flex flex-col group cursor-pointer hover:shadow-md transition-shadow">
+<div class="w-full aspect-square bg-surface-container-low mb-sm overflow-hidden relative">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 absolute inset-0" data-alt="A minimalist presentation of a vibrant green matcha latte in a clear glass tumbler, set against a pristine white background. High key lighting emphasizes the clean, refreshing, and modern Scandinavian design aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4FvEbBh4u8MuFxpPh3AFrSSrMKeFbECSEvo6KhE4ufUEedgmgDRi2k8izEkjDtCEsu-7-1ftqaC1AWbRGW7U9_Buev3tUNvjFD0FiNy5XFkVVc0TJN0YBmvGlVXk6Sg1F2hFjZVo--bDC8jkh2PYClwc-yqgY53dJy5vT__u_cNkgCSU7FHliP4VvJpMgHBG9KXPpO8LaVuHHTpMmyhjCg3PMmDrPWj74j9pT9Nh0tmYZ3HnKl7qSgsOzLj7i0AKIxwoqR4entHI"/>
+</div>
+<h4 class="font-product-name text-product-name text-text-primary mb-xs">ไอซ์มัทฉะ (ชาเขียวเย็น)</h4>
+<div class="mt-auto flex justify-between items-center">
+<span class="font-price text-body text-text-primary font-bold">$5.20</span>
+<button class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center hover:bg-primary-hover transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="bg-surface dark:bg-surface-dim text-primary dark:text-primary-fixed font-caption text-caption fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 md:hidden docked full-width bottom-0 rounded-t-xl border-t border-border shadow-md">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="local_cafe">local_cafe</span>
+<span>Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="map">map</span>
+<span>Track</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 Active: scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="shopping_cart" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+<span class="font-bold">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span>Profile</span>
+</a>
+</nav>
+</body></html>

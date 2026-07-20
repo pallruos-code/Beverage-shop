@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FikaSmart Kitchen Display System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                            "on-secondary-container": "#705e00",
+                            "surface-container-high": "#e9e8e7",
+                            "surface": "#FFFFFF",
+                            "secondary-fixed": "#ffe164",
+                            "primary-container": "#003399",
+                            "outline": "#747684",
+                            "inverse-on-surface": "#f2f0f0",
+                            "primary": "#002068",
+                            "outline-variant": "#c4c5d5",
+                            "surface-tint": "#3557bc",
+                            "border": "#DFDFDF",
+                            "tertiary-fixed-dim": "#6edf58",
+                            "tertiary-container": "#034800",
+                            "inverse-primary": "#b5c4ff",
+                            "on-surface": "#1b1c1c",
+                            "on-background": "#1b1c1c",
+                            "surface-container-low": "#f5f3f3",
+                            "on-error-container": "#93000a",
+                            "secondary": "#6f5d00",
+                            "text-secondary": "#484848",
+                            "on-surface-variant": "#444653",
+                            "inverse-surface": "#303031",
+                            "on-tertiary-fixed": "#012200",
+                            "on-tertiary-container": "#4ebe3c",
+                            "background": "#F5F5F5",
+                            "error": "#CC0008",
+                            "primary-fixed-dim": "#b5c4ff",
+                            "on-tertiary": "#ffffff",
+                            "on-primary-container": "#8aa4ff",
+                            "surface-container-lowest": "#ffffff",
+                            "primary-fixed": "#dce1ff",
+                            "on-secondary": "#ffffff",
+                            "tertiary-fixed": "#8afc71",
+                            "surface-dim": "#dbdad9",
+                            "primary-hover": "#002B80",
+                            "text-primary": "#111111",
+                            "on-secondary-fixed": "#221b00",
+                            "on-primary": "#ffffff",
+                            "on-primary-fixed-variant": "#153ea3",
+                            "on-tertiary-fixed-variant": "#045300",
+                            "secondary-fixed-dim": "#e7c400",
+                            "tertiary": "#012f00",
+                            "surface-container-highest": "#e3e2e2",
+                            "on-secondary-fixed-variant": "#544600",
+                            "secondary-container": "#fdd816",
+                            "surface-container": "#efeded",
+                            "error-container": "#ffdad6",
+                            "warning": "#E87400",
+                            "on-primary-fixed": "#00164e",
+                            "on-error": "#ffffff",
+                            "surface-bright": "#fbf9f9",
+                            "surface-variant": "#e3e2e2"
+                    },
+                    "borderRadius": {
+                            "DEFAULT": "0.125rem",
+                            "lg": "0.25rem",
+                            "xl": "0.5rem",
+                            "full": "0.75rem"
+                    },
+                    "spacing": {
+                            "xs": "8px",
+                            "base": "4px",
+                            "lg": "24px",
+                            "xl": "32px",
+                            "md": "16px",
+                            "gutter-desktop": "20px",
+                            "container-max": "1400px",
+                            "xxl": "64px",
+                            "sm": "12px",
+                            "gutter-mobile": "8px"
+                    },
+                    "fontFamily": {
+                            "h2": [
+                                    "Noto Sans"
+                            ],
+                            "body-sm": [
+                                    "Noto Sans"
+                            ],
+                            "h1": [
+                                    "Noto Sans"
+                            ],
+                            "price": [
+                                    "Noto Sans"
+                            ],
+                            "display": [
+                                    "Noto Sans"
+                            ],
+                            "product-name": [
+                                    "Noto Sans"
+                            ],
+                            "label": [
+                                    "Noto Sans"
+                            ],
+                            "caption": [
+                                    "Noto Sans"
+                            ],
+                            "body": [
+                                    "Noto Sans"
+                            ],
+                            "h3": [
+                                    "Noto Sans"
+                            ],
+                            "dimensions": [
+                                    "JetBrains Mono"
+                            ],
+                            "h1-mobile": [
+                                    "Noto Sans"
+                            ]
+                    },
+                    "fontSize": {
+                            "h2": [
+                                    "24px",
+                                    {
+                                            "lineHeight": "31.2px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "body-sm": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "21px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "h1": [
+                                    "32px",
+                                    {
+                                            "lineHeight": "41.6px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "price": [
+                                    "24px",
+                                    {
+                                            "lineHeight": "31.2px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "display": [
+                                    "40px",
+                                    {
+                                            "lineHeight": "52px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "product-name": [
+                                    "16px",
+                                    {
+                                            "lineHeight": "24px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "label": [
+                                    "15px",
+                                    {
+                                            "lineHeight": "20px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "caption": [
+                                    "12px",
+                                    {
+                                            "lineHeight": "18px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "body": [
+                                    "16px",
+                                    {
+                                            "lineHeight": "24px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "h3": [
+                                    "18px",
+                                    {
+                                            "lineHeight": "23.4px",
+                                            "fontWeight": "700"
+                                    }
+                            ],
+                            "dimensions": [
+                                    "14px",
+                                    {
+                                            "lineHeight": "21px",
+                                            "fontWeight": "400"
+                                    }
+                            ],
+                            "h1-mobile": [
+                                    "28px",
+                                    {
+                                            "lineHeight": "36px",
+                                            "fontWeight": "700"
+                                    }
+                            ]
+                    }
+            },
+                },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-primary text-on-primary fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter-desktop h-[64px] border-b border-outline-variant shadow-md">
+<div class="flex items-center gap-xl">
+<h1 class="font-h2 text-h2 text-on-primary tracking-tight">FikaSmart KDS</h1>
+<nav class="hidden md:flex gap-lg">
+<a class="text-on-primary opacity-80 font-label text-label hover:bg-primary-hover transition-colors px-xs py-base rounded-DEFAULT" href="#">Offers</a>
+<a class="text-on-primary opacity-80 font-label text-label hover:bg-primary-hover transition-colors px-xs py-base rounded-DEFAULT" href="#">Sustainability</a>
+<a class="text-on-primary opacity-80 font-label text-label hover:bg-primary-hover transition-colors px-xs py-base rounded-DEFAULT" href="#">Find Us</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-xs bg-tertiary-container text-on-tertiary-container px-sm py-base rounded-full font-label text-label">
+<span class="material-symbols-outlined text-sm">wifi</span>
+                Online
+            </div>
+<button aria-label="shopping_cart" class="text-on-primary hover:bg-primary-hover p-xs rounded-full transition-colors">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+<button aria-label="account_circle" class="text-on-primary hover:bg-primary-hover p-xs rounded-full transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-label text-label hidden md:inline">Staff: Somchai</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-[84px] pb-lg px-gutter-desktop md:max-w-container-max md:mx-auto w-full grid grid-cols-1 md:grid-cols-3 gap-gutter-desktop overflow-hidden h-screen">
+<!-- Column 1: New Orders (Pending) -->
+<section class="flex flex-col bg-surface-container-low rounded-lg border border-border h-full overflow-hidden">
+<header class="bg-surface-variant text-on-surface-variant px-md py-sm border-b border-border flex justify-between items-center">
+<h2 class="font-h3 text-h3 flex items-center gap-xs">
+<span class="material-symbols-outlined">inbox</span>
+                    ออเดอร์ใหม่ (New)
+                </h2>
+<span class="bg-error text-on-error font-dimensions text-dimensions px-sm py-base rounded-full">3</span>
+</header>
+<div class="flex-1 overflow-y-auto p-md flex flex-col gap-md">
+<!-- Card 1 -->
+<article class="bg-surface rounded-lg border border-border p-md shadow-sm relative">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-dimensions text-dimensions font-bold text-primary text-xl">A001</span>
+<span class="font-dimensions text-dimensions text-error flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">timer</span>
+                            00:45
+                        </span>
+</div>
+<div class="border-t border-border pt-xs mb-md">
+<div class="flex justify-between items-center py-base">
+<span class="font-product-name text-product-name text-on-surface">1x Iced Latte</span>
+</div>
+<ul class="font-body-sm text-body-sm text-text-secondary pl-lg list-disc">
+<li>หวานน้อย (25%)</li>
+<li>นมโอ๊ต (Oat Milk)</li>
+</ul>
+</div>
+<button class="w-full bg-primary text-on-primary font-label text-label h-[44px] rounded-DEFAULT hover:bg-primary-hover transition-colors flex justify-center items-center gap-xs">
+<span class="material-symbols-outlined">check</span>
+                        รับออเดอร์ (Accept)
+                    </button>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface rounded-lg border border-border p-md shadow-sm relative">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-dimensions text-dimensions font-bold text-primary text-xl">A002</span>
+<span class="font-dimensions text-dimensions text-warning flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">timer</span>
+                            02:15
+                        </span>
+</div>
+<div class="border-t border-border pt-xs mb-md">
+<div class="flex justify-between items-center py-base">
+<span class="font-product-name text-product-name text-on-surface">2x Americano</span>
+</div>
+<ul class="font-body-sm text-body-sm text-text-secondary pl-lg list-disc">
+<li>ร้อน</li>
+</ul>
+<div class="flex justify-between items-center py-base mt-xs">
+<span class="font-product-name text-product-name text-on-surface">1x Cappuccino</span>
+</div>
+<ul class="font-body-sm text-body-sm text-text-secondary pl-lg list-disc">
+<li>เย็น</li>
+<li>เพิ่มวิปครีม</li>
+</ul>
+</div>
+<button class="w-full bg-primary text-on-primary font-label text-label h-[44px] rounded-DEFAULT hover:bg-primary-hover transition-colors flex justify-center items-center gap-xs">
+<span class="material-symbols-outlined">check</span>
+                        รับออเดอร์ (Accept)
+                    </button>
+</article>
+</div>
+</section>
+<!-- Column 2: Preparing (In Progress) -->
+<section class="flex flex-col bg-surface-container-low rounded-lg border border-border h-full overflow-hidden">
+<header class="bg-surface-variant text-on-surface-variant px-md py-sm border-b border-border flex justify-between items-center">
+<h2 class="font-h3 text-h3 flex items-center gap-xs">
+<span class="material-symbols-outlined">blender</span>
+                    กำลังเตรียม (Preparing)
+                </h2>
+<span class="bg-secondary-container text-on-secondary-container font-dimensions text-dimensions px-sm py-base rounded-full">2</span>
+</header>
+<div class="flex-1 overflow-y-auto p-md flex flex-col gap-md">
+<!-- Card 3 -->
+<article class="bg-surface rounded-lg border-2 border-secondary-fixed p-md shadow-md relative">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-dimensions text-dimensions font-bold text-primary text-xl">B014</span>
+<span class="font-dimensions text-dimensions text-text-secondary flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">timer</span>
+                            05:30
+                        </span>
+</div>
+<div class="border-t border-border pt-xs mb-md">
+<div class="flex justify-between items-center py-base">
+<span class="font-product-name text-product-name text-on-surface">1x Matcha Frappe</span>
+</div>
+<ul class="font-body-sm text-body-sm text-text-secondary pl-lg list-disc">
+<li>หวานปกติ</li>
+<li>เพิ่มไข่มุก</li>
+</ul>
+</div>
+<button class="w-full bg-tertiary-container text-on-tertiary-container font-label text-label h-[44px] rounded-DEFAULT hover:opacity-90 transition-opacity flex justify-center items-center gap-xs">
+<span class="material-symbols-outlined">done_all</span>
+                        เสร็จสิ้น (Complete)
+                    </button>
+</article>
+<!-- Card 4 -->
+<article class="bg-surface rounded-lg border border-border p-md shadow-sm relative">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-dimensions text-dimensions font-bold text-primary text-xl">A005</span>
+<span class="font-dimensions text-dimensions text-text-secondary flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">timer</span>
+                            08:12
+                        </span>
+</div>
+<div class="border-t border-border pt-xs mb-md">
+<div class="flex justify-between items-center py-base">
+<span class="font-product-name text-product-name text-on-surface">1x Espresso</span>
+</div>
+</div>
+<button class="w-full bg-tertiary-container text-on-tertiary-container font-label text-label h-[44px] rounded-DEFAULT hover:opacity-90 transition-opacity flex justify-center items-center gap-xs">
+<span class="material-symbols-outlined">done_all</span>
+                        เสร็จสิ้น (Complete)
+                    </button>
+</article>
+</div>
+</section>
+<!-- Column 3: Ready (Completed) -->
+<section class="flex flex-col bg-surface-container-low rounded-lg border border-border h-full overflow-hidden opacity-80">
+<header class="bg-surface-variant text-on-surface-variant px-md py-sm border-b border-border flex justify-between items-center">
+<h2 class="font-h3 text-h3 flex items-center gap-xs">
+<span class="material-symbols-outlined">storefront</span>
+                    พร้อมเสิร์ฟ (Ready)
+                </h2>
+<span class="bg-outline-variant text-on-surface-variant font-dimensions text-dimensions px-sm py-base rounded-full">4</span>
+</header>
+<div class="flex-1 overflow-y-auto p-md flex flex-col gap-md">
+<!-- Card 5 -->
+<article class="bg-surface rounded-lg border border-border p-md shadow-sm relative">
+<div class="flex justify-between items-start mb-xs">
+<span class="font-dimensions text-dimensions font-bold text-outline text-xl line-through">B012</span>
+<span class="font-caption text-caption text-text-secondary flex items-center gap-xs bg-surface-container px-sm py-base rounded-full">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                            รอรับ
+                        </span>
+</div>
+<div class="border-t border-border pt-xs">
+<div class="flex justify-between items-center py-base">
+<span class="font-body-sm text-body-sm text-text-secondary">2x Items</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Hidden on Desktop) -->
+<nav class="bg-surface border-t border-border fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 md:hidden shadow-md rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors p-xs rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1">local_cafe</span>
+<span class="font-caption text-caption">Shop</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 hover:bg-surface-container-high transition-colors scale-95 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1 filled">map</span>
+<span class="font-caption text-caption font-bold">Track</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors p-xs rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1">favorite</span>
+<span class="font-caption text-caption">Favorites</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors p-xs rounded-lg" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-caption text-caption">Profile</span>
+</a>
+</nav>
+</body></html>

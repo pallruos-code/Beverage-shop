@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FikaSmart - Menu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e3e2e2",
+                        "primary-hover": "#002B80",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#6edf58",
+                        "tertiary-fixed": "#8afc71",
+                        "surface-container-high": "#e9e8e7",
+                        "border": "#DFDFDF",
+                        "text-primary": "#111111",
+                        "on-primary": "#ffffff",
+                        "primary": "#002068",
+                        "outline-variant": "#c4c5d5",
+                        "primary-fixed": "#dce1ff",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dbdad9",
+                        "secondary-fixed-dim": "#e7c400",
+                        "on-secondary-fixed": "#221b00",
+                        "on-background": "#1b1c1c",
+                        "secondary-container": "#fdd816",
+                        "on-secondary-fixed-variant": "#544600",
+                        "on-tertiary-fixed": "#012200",
+                        "tertiary": "#012f00",
+                        "error": "#CC0008",
+                        "warning": "#E87400",
+                        "surface-container": "#efeded",
+                        "tertiary-container": "#034800",
+                        "surface-bright": "#fbf9f9",
+                        "inverse-surface": "#303031",
+                        "surface": "#FFFFFF",
+                        "on-surface-variant": "#444653",
+                        "inverse-on-surface": "#f2f0f0",
+                        "on-primary-fixed": "#00164e",
+                        "secondary-fixed": "#ffe164",
+                        "primary-container": "#003399",
+                        "surface-container-low": "#f5f3f3",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b5c4ff",
+                        "on-primary-fixed-variant": "#153ea3",
+                        "secondary": "#6f5d00",
+                        "on-primary-container": "#8aa4ff",
+                        "on-tertiary-fixed-variant": "#045300",
+                        "text-secondary": "#484848",
+                        "outline": "#747684",
+                        "background": "#F5F5F5",
+                        "inverse-primary": "#b5c4ff",
+                        "on-surface": "#1b1c1c",
+                        "on-tertiary": "#ffffff",
+                        "surface-tint": "#3557bc",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-tertiary-container": "#4ebe3c",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#705e00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter-desktop": "20px",
+                        "gutter-mobile": "8px",
+                        "sm": "12px",
+                        "md": "16px",
+                        "base": "4px",
+                        "container-max": "1400px",
+                        "xl": "32px",
+                        "xxl": "64px",
+                        "xs": "8px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "dimensions": ["JetBrains Mono"],
+                        "body": ["Noto Sans"],
+                        "h3": ["Noto Sans"],
+                        "caption": ["Noto Sans"],
+                        "h2": ["Noto Sans"],
+                        "body-sm": ["Noto Sans"],
+                        "h1-mobile": ["Noto Sans"],
+                        "h1": ["Noto Sans"],
+                        "price": ["Noto Sans"],
+                        "product-name": ["Noto Sans"],
+                        "display": ["Noto Sans"],
+                        "label": ["Noto Sans"]
+                    },
+                    "fontSize": {
+                        "dimensions": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+                        "body": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "h3": ["18px", { "lineHeight": "23.4px", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "h2": ["24px", { "lineHeight": "31.2px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+                        "h1-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "h1": ["32px", { "lineHeight": "41.6px", "fontWeight": "700" }],
+                        "price": ["24px", { "lineHeight": "31.2px", "fontWeight": "700" }],
+                        "product-name": ["16px", { "lineHeight": "24px", "fontWeight": "700" }],
+                        "display": ["40px", { "lineHeight": "52px", "fontWeight": "700" }],
+                        "label": ["15px", { "lineHeight": "20px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card-elevation {
+            box-shadow: 0 1px 3px rgba(17,17,17,0.06);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pt-[64px] pb-[80px] md:pb-0">
+<!-- TopNavBar (Desktop) -->
+<header class="hidden md:flex bg-primary text-on-primary font-label text-label border-b border-outline-variant fixed top-0 left-0 w-full z-50 justify-center h-[64px]">
+<div class="w-full flex justify-between items-center px-gutter-desktop max-w-container-max">
+<div class="font-h2 text-h2 text-on-primary tracking-tight">FikaSmart</div>
+<nav class="flex gap-lg">
+<a class="text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-2 py-1 rounded-DEFAULT" href="#">โปรโมชั่น</a>
+<a class="text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-2 py-1 rounded-DEFAULT" href="#">ความยั่งยืน</a>
+<a class="text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-2 py-1 rounded-DEFAULT" href="#">ค้นหาเรา</a>
+</nav>
+<div class="flex gap-md">
+<button class="text-on-primary opacity-80 hover:bg-primary-hover transition-colors p-1 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span>
+</button>
+<button class="text-on-primary opacity-80 hover:bg-primary-hover transition-colors p-1 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto mt-xl">
+<header class="mb-xl text-center md:text-left">
+<h1 class="font-display text-display text-text-primary mb-xs">เมนู</h1>
+<p class="font-body text-body text-text-secondary max-w-2xl">พบกับเครื่องดื่มที่เราคัดสรรมาเป็นอย่างดี เพื่อประสิทธิภาพและสุนทรียภาพในทุกวันของคุณ</p>
+</header>
+<!-- Category Tabs -->
+<div class="flex overflow-x-auto gap-sm mb-xl pb-2 scrollbar-hide">
+<button class="flex-shrink-0 bg-primary text-on-primary font-label text-label px-6 py-2 rounded-full shadow-sm">กาแฟ</button>
+<button class="flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-6 py-2 rounded-full hover:bg-surface-variant transition-colors">ชา</button>
+<button class="flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-6 py-2 rounded-full hover:bg-surface-variant transition-colors">เครื่องดื่มเติมความสดชื่น</button>
+</div>
+<!-- Product Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- Item 1 -->
+<article class="bg-surface border border-border card-elevation flex flex-col group relative">
+<div class="relative w-full aspect-square overflow-hidden bg-surface-variant">
+<span class="absolute top-sm left-sm bg-tertiary text-on-tertiary font-caption text-caption px-2 py-1 z-10">เพื่อความยั่งยืน</span>
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A high-quality product photograph of a meticulously crafted latte in a minimalist ceramic cup, sitting on a pristine light wood table. The setting reflects Scandinavian functionalism with clean lines, soft natural lighting, and a bright, airy atmosphere. A subtle hint of green foliage is visible in the blurred background. The overall aesthetic is modern, corporate, and inviting, emphasizing high-end beverage quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA99hU035zko4CccqvPNBxtbuecMpqphwFBzq_eVscHGFW5sdrOoPposRxfSRViteQWpWAmuq2Hl11vx-WPc98MUMy99oWX4o_V3gnEUqKRSHxxP9JvICHJvbS2EUhTfsNaMreTAcKOHlfM0TTyY40WpAO0rbIvDs8AOtTP_FoKLpaE0_WirhfS9fhurLFp81eCcWCKTxpTfbIBIWifrJuDM72OCK7Veqj3wyb1z4T2XQQ8j-Y7kACVyhZl2uEJrh6jx7myuGHGp9g"/>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h2 class="font-product-name text-product-name text-text-primary mb-1">นอร์ดิกโอ๊ตลาเต้</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4 flex-grow">เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา</p>
+<div class="flex justify-between items-end mt-auto">
+<span class="font-price text-price text-text-primary">$4.50</span>
+</div>
+<button class="mt-4 h-[44px] w-full bg-secondary-container text-on-surface font-label text-label rounded-DEFAULT flex items-center justify-center hover:bg-secondary-fixed transition-colors">
+                        เพิ่มลงตะกร้า
+                    </button>
+</div>
+</article>
+<!-- Item 2 -->
+<article class="bg-surface border border-border card-elevation flex flex-col group relative">
+<div class="relative w-full aspect-square overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A rich, dark espresso shot in a small, utilitarian white ceramic demitasse cup, sitting squarely on a brushed steel cafe table. The environment is heavily influenced by Scandinavian minimalism, focusing on practical, efficient design without unnecessary ornamentation. The lighting is bright and directional, casting subtle shadows that highlight the flat design ethos. The mood is focused, energizing, and highly professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUe1lmWVWobh8HD_c4dVOfu3WIHFvLWz_Vq41hG3pbLCiIfw72mpYpXZyfOxnnLdJloNLkQmZY_Nl5t5ucANB4GwsnV14tgPZ7eXFMxE-K6b8eVY7hy0pEZMixbzhyylZnaxjqK544SD5W9sT0I18V-pyt3XfX2r5kCodDlbtXdwKhpvt8WFGxQ1UI4t3YO-n3fVV-QHAkyvSDJAuWmO-03HKVjvFmQ-LC2OQx9bgLNoROpZ0l3378XsTxOE3RayGnjPgKf37cKBY"/>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h2 class="font-product-name text-product-name text-text-primary mb-1">ฟังก์ชันนัลเอสเพรสโซ่</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4 flex-grow">เอสเพรสโซ่เข้มข้น 2 ช็อตจากเมล็ดคั่วเข้ม เพื่อพลังงาน...</p>
+<div class="flex justify-between items-end mt-auto">
+<span class="font-price text-price text-text-primary">$3.00</span>
+</div>
+<button class="mt-4 h-[44px] w-full bg-secondary-container text-on-surface font-label text-label rounded-DEFAULT flex items-center justify-center hover:bg-secondary-fixed transition-colors">
+                        เพิ่มลงตะกร้า
+                    </button>
+</div>
+</article>
+<!-- Item 3 -->
+<article class="bg-surface border border-border card-elevation flex flex-col group relative">
+<div class="relative w-full aspect-square overflow-hidden bg-surface-variant">
+<span class="absolute top-sm left-sm bg-tertiary text-on-tertiary font-caption text-caption px-2 py-1 z-10">เพื่อความยั่งยืน</span>
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A crisp, professional product shot of a steaming cup of green tea in a clear glass mug, placed on a smooth white surface. The lighting is high-key and soft, creating a serene and democratic design feel typical of Nordic minimalism. The composition is strictly geometric, perfectly centered. The scene feels refreshing, clean, and highly organized, suitable for a modern corporate cafe menu." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARSEvQVMz71-aI1HiLqamp5ik21567ajyGPxI9E9rvuWLtbQHoQvUK2LGCdrrNc8VukhtkViRgnb16WJPb07CzYm1AC9ClmYz-L8ZqGohEB7qIRfIPYlErbHVQKIDBo6Wps6FOAZVpMvnDWGPWrsEL-xhk7ycne__PNe_H_Pw1ioJZ6UuOmPyN4E5uLDXHmbkNiXoC9Hq9t8p8_4Yi2zRo4x4a42afl0Hog1Hxj7FD040EnowsDgC5vUp_63o-CR0-BtN3_0Jw-Nc"/>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h2 class="font-product-name text-product-name text-text-primary mb-1">แคลริตี้กรีนที (ชาเขียว)</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4 flex-grow">ใบชาเซนฉะชั้นดี ให้ความรู้สึกสดชื่นเบาสบาย...</p>
+<div class="flex justify-between items-end mt-auto">
+<span class="font-price text-price text-text-primary">$3.50</span>
+</div>
+<button class="mt-4 h-[44px] w-full bg-secondary-container text-on-surface font-label text-label rounded-DEFAULT flex items-center justify-center hover:bg-secondary-fixed transition-colors">
+                        เพิ่มลงตะกร้า
+                    </button>
+</div>
+</article>
+<!-- Item 4 -->
+<article class="bg-surface border border-border card-elevation flex flex-col group relative">
+<div class="relative w-full aspect-square overflow-hidden bg-surface-variant">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A vibrant, ice-filled fruit refresher beverage in a tall, elegant glass, resting on a matte light gray countertop. The image exudes a modern, optimistic brand personality with bright, saturated colors contrasting against the neutral background. The lighting is even and flat, emphasizing the mathematical geometric logic of the composition. The style is clean, utilitarian, and perfectly aligned with a high-end functionalist design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCy0S_gglJsHJfAAYRkJlcDNVRlcxKjcI8LZQQsflVIMD6GdO2zGqNAJ6CiB5W3YKAcz5haCdMriq7leqRcN70EQIx1D-AHyijwQuSNKuVwGTgeRjDxl3oCTcZAni9xDyr1wTpnTJnFWA3iN3mWum_CJ5NUEH5TfnPmKTN17ZbRcaB568vPBpVoqnuU63QvHTmCmJS5G90D4x1cRtdm98AEZAF7RLJ_GxcVBMSy25pVw1Qb2wdc9mTrUwNYRCHDXT55oFy5__c05SQ"/>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<h2 class="font-product-name text-product-name text-text-primary mb-1">ซิตรัสไฮเดรเตอร์</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-4 flex-grow">น้ำโซดาเย็นจัด ผสมเลมอนสกัดเย็น และ...</p>
+<div class="flex justify-between items-end mt-auto">
+<span class="font-price text-price text-text-primary">$4.00</span>
+</div>
+<button class="mt-4 h-[44px] w-full bg-secondary-container text-on-surface font-label text-label rounded-DEFAULT flex items-center justify-center hover:bg-secondary-fixed transition-colors">
+                        เพิ่มลงตะกร้า
+                    </button>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden bg-surface text-primary font-caption text-caption shadow-md fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-2 border-t border-border rounded-t-xl">
+<!-- Active Tab: Shop -->
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 hover:bg-surface-container-high active:scale-95 transition-transform">
+<span class="material-symbols-outlined icon-fill mb-1" data-icon="local_cafe">local_cafe</span>
+<span>Shop</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full transition-colors">
+<span class="material-symbols-outlined mb-1" data-icon="map">map</span>
+<span>Track</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full transition-colors">
+<span class="material-symbols-outlined mb-1" data-icon="favorite">favorite</span>
+<span>Favorites</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full transition-colors">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span>Profile</span>
+</button>
+</nav>
+</body></html>

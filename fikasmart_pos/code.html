@@ -1,0 +1,406 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>ชำระเงินและพิมพ์ใบเสร็จ - FikaSmart POS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#034800",
+                    "on-error": "#ffffff",
+                    "secondary": "#6f5d00",
+                    "on-primary-container": "#8aa4ff",
+                    "warning": "#E87400",
+                    "background": "#F5F5F5",
+                    "text-secondary": "#484848",
+                    "text-primary": "#111111",
+                    "on-tertiary": "#ffffff",
+                    "primary-hover": "#002B80",
+                    "surface-tint": "#3557bc",
+                    "surface-bright": "#fbf9f9",
+                    "tertiary": "#012f00",
+                    "on-secondary-fixed": "#221b00",
+                    "primary-container": "#003399",
+                    "outline-variant": "#c4c5d5",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed-dim": "#e7c400",
+                    "on-background": "#1b1c1c",
+                    "secondary-container": "#fdd816",
+                    "surface-variant": "#e3e2e2",
+                    "on-primary-fixed-variant": "#153ea3",
+                    "surface-container-low": "#f5f3f3",
+                    "surface": "#FFFFFF",
+                    "on-secondary-fixed-variant": "#544600",
+                    "primary-fixed": "#dce1ff",
+                    "surface-container-lowest": "#ffffff",
+                    "border": "#DFDFDF",
+                    "on-tertiary-fixed": "#012200",
+                    "outline": "#747684",
+                    "on-primary-fixed": "#00164e",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#4ebe3c",
+                    "error": "#CC0008",
+                    "surface-container-highest": "#e3e2e2",
+                    "primary-fixed-dim": "#b5c4ff",
+                    "primary": "#002068",
+                    "inverse-on-surface": "#f2f0f0",
+                    "inverse-surface": "#303031",
+                    "on-tertiary-fixed-variant": "#045300",
+                    "inverse-primary": "#b5c4ff",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#8afc71",
+                    "surface-container": "#efeded",
+                    "on-surface-variant": "#444653",
+                    "surface-dim": "#dbdad9",
+                    "on-secondary-container": "#705e00",
+                    "tertiary-fixed-dim": "#6edf58",
+                    "on-surface": "#1b1c1c",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#ffe164",
+                    "surface-container-high": "#e9e8e7"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xs": "8px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "gutter-desktop": "20px",
+                    "sm": "12px",
+                    "base": "4px",
+                    "md": "16px",
+                    "container-max": "1400px",
+                    "xxl": "64px",
+                    "gutter-mobile": "8px"
+            },
+            "fontFamily": {
+                    "label": [
+                            "Noto Sans"
+                    ],
+                    "body": [
+                            "Noto Sans"
+                    ],
+                    "h1": [
+                            "Noto Sans"
+                    ],
+                    "h3": [
+                            "Noto Sans"
+                    ],
+                    "display": [
+                            "Noto Sans"
+                    ],
+                    "h2": [
+                            "Noto Sans"
+                    ],
+                    "caption": [
+                            "Noto Sans"
+                    ],
+                    "dimensions": [
+                            "JetBrains Mono"
+                    ],
+                    "h1-mobile": [
+                            "Noto Sans"
+                    ],
+                    "price": [
+                            "Noto Sans"
+                    ],
+                    "body-sm": [
+                            "Noto Sans"
+                    ],
+                    "product-name": [
+                            "Noto Sans"
+                    ]
+            },
+            "fontSize": {
+                    "label": [
+                            "15px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h1": [
+                            "32px",
+                            {
+                                    "lineHeight": "41.6px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "h3": [
+                            "18px",
+                            {
+                                    "lineHeight": "23.4px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "display": [
+                            "40px",
+                            {
+                                    "lineHeight": "52px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "h2": [
+                            "24px",
+                            {
+                                    "lineHeight": "31.2px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "caption": [
+                            "12px",
+                            {
+                                    "lineHeight": "18px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "dimensions": [
+                            "14px",
+                            {
+                                    "lineHeight": "21px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "h1-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "36px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "price": [
+                            "24px",
+                            {
+                                    "lineHeight": "31.2px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "21px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "product-name": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .receipt-paper {
+            background-color: #fdfdfd;
+            box-shadow: 0 4px 12px rgba(17,17,17,0.08);
+            border: 1px solid #DFDFDF;
+        }
+        .zigzag-bottom {
+            background: linear-gradient(-45deg, transparent 16px, #fdfdfd 0), linear-gradient(45deg, transparent 16px, #fdfdfd 0);
+            background-repeat: repeat-x;
+            background-position: left bottom;
+            background-size: 22px 32px;
+            content: "";
+            display: block;
+            width: 100%;
+            height: 32px;
+            margin-top: -16px;
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-background text-text-primary font-body antialiased min-h-screen pt-[64px]">
+<!-- TopNavBar -->
+<nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter-desktop max-w-container-max mx-auto h-[64px] bg-primary dark:bg-primary border-b border-outline-variant flat no shadows">
+<div class="flex items-center gap-md">
+<span class="font-h2 text-h2 text-on-primary tracking-tight">FikaSmart POS</span>
+</div>
+<div class="hidden md:flex items-center gap-lg">
+<a class="font-label text-label text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-xs py-base" href="#">Offers</a>
+<a class="font-label text-label text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-xs py-base" href="#">Sustainability</a>
+<a class="font-label text-label text-on-primary opacity-80 hover:bg-primary-hover transition-colors px-xs py-base" href="#">Find Us</a>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-on-primary hover:bg-primary-hover transition-colors p-xs rounded-lg">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+<button class="text-on-primary hover:bg-primary-hover transition-colors p-xs rounded-lg">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</nav>
+<main class="max-w-container-max mx-auto px-gutter-desktop py-lg grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Header Section -->
+<div class="col-span-1 lg:col-span-12 mb-sm flex justify-between items-center">
+<div>
+<h1 class="font-h1 text-h1 text-text-primary mb-base">ชำระเงินและพิมพ์ใบเสร็จ</h1>
+<div class="flex items-center gap-xs text-on-tertiary-container bg-tertiary-fixed-dim px-sm py-base rounded-full inline-flex font-label text-label">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                    Payment Successful (ชำระเงินสำเร็จ)
+                </div><div class="flex items-center gap-xs text-primary bg-primary-fixed px-sm py-base rounded-full inline-flex font-label text-label ml-sm">
+  <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
+  QR Active (พร้อมสแกน)
+</div>
+</div>
+<div class="text-right">
+<p class="font-caption text-caption text-text-secondary">Order: #ORD-2023-145</p>
+<p class="font-dimensions text-dimensions text-text-secondary">Queue: <strong class="text-text-primary text-h3">A001</strong></p>
+</div>
+</div>
+<!-- Left Column: Order Summary -->
+<div class="col-span-1 lg:col-span-7 flex flex-col gap-md">
+<div class="bg-surface rounded-lg border border-border p-md shadow-sm">
+<h2 class="font-h2 text-h2 mb-md border-b border-border pb-xs">Order Summary</h2>
+<div class="flex flex-col gap-sm">
+<!-- Item 1 -->
+<div class="flex justify-between items-start border-b border-surface-variant pb-sm last:border-0 last:pb-0">
+<div class="flex-1">
+<h3 class="font-product-name text-product-name">Nordic Oat Latte</h3>
+<p class="font-body-sm text-body-sm text-text-secondary">+ Extra Shot</p>
+<p class="font-body-sm text-body-sm text-text-secondary">+ Vanilla Syrup</p>
+</div>
+<div class="font-dimensions text-dimensions text-right ml-md w-16">
+                            x1
+                        </div>
+<div class="font-price text-price text-right w-24">
+                            $5.50
+                        </div>
+</div>
+<!-- Item 2 -->
+<div class="flex justify-between items-start border-b border-surface-variant pb-sm last:border-0 last:pb-0">
+<div class="flex-1">
+<h3 class="font-product-name text-product-name">Swedish Cinnamon Bun</h3>
+<p class="font-body-sm text-body-sm text-text-secondary">Warmed</p>
+</div>
+<div class="font-dimensions text-dimensions text-right ml-md w-16">
+                            x2
+                        </div>
+<div class="font-price text-price text-right w-24">
+                            $7.00
+                        </div>
+</div>
+</div>
+<div class="mt-lg pt-md border-t border-border flex flex-col gap-xs font-dimensions text-dimensions">
+<div class="flex justify-between">
+<span class="text-text-secondary">Subtotal</span>
+<span class="">$12.50</span>
+</div>
+<div class="flex justify-between">
+<span class="text-text-secondary">Tax (8%)</span>
+<span class="">$1.00</span>
+</div>
+<div class="flex justify-between font-bold text-h3 mt-xs pt-xs border-t border-surface-variant">
+<span class="">Total Paid</span>
+<span class="">$13.50</span>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex gap-md mt-sm">
+<button class="flex-1 h-[44px] bg-secondary-container text-on-secondary-container font-label text-label rounded-lg hover:bg-secondary-fixed transition-colors flex items-center justify-center gap-xs shadow-sm">
+<span class="material-symbols-outlined">print</span>
+                    Print Receipt (พิมพ์ใบเสร็จ)
+                </button>
+<button class="flex-1 h-[44px] bg-surface text-primary border-2 border-primary font-label text-label rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined">add_circle</span>
+                    New Order (เริ่มออเดอร์ใหม่)
+                </button>
+</div>
+</div>
+<!-- Right Column: Receipt Preview -->
+<div class="col-span-1 lg:col-span-5 flex justify-center">
+<div class="w-full max-w-[320px]">
+<div class="receipt-paper p-lg pb-0 relative">
+<div class="text-center mb-md border-b border-dashed border-outline-variant pb-md">
+<img alt="FikaSmart Logo" class="w-16 h-16 mx-auto mb-sm rounded-sm object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLscMW3xThVEJkMAUyEF3WSwSDlGcFyvjYP7ij8Ryx869e-A5RuGC-bmKWfwgicMWUnmLZkUdX-KN2SJvjRuGiimQpgLeczmrlY1owdUHntkn--PEPrm3GKTM05WzLr-PjolTDTzTgAHUH2rRsNmxwIdiUQR-c_6gpXgg781PLvLbk0O_kKxl2jDTcYHyCnLxAQZ2sbq0Xap3vE8LVtWsOvdGY0G-VzLhNz77xlRYvenRN-2AY0yXNWhdq4">
+<h3 class="font-dimensions text-dimensions font-bold">FikaSmart Store #042</h3>
+<p class="font-dimensions text-[10px] text-text-secondary mt-xs">123 Nordic Way<br>Stockholm, SE 12345</p>
+<p class="font-dimensions text-[10px] text-text-secondary mt-xs">Date: 2023-10-27 14:32</p>
+</div>
+<div class="mb-md border-b border-dashed border-outline-variant pb-md text-center">
+<p class="font-dimensions text-[12px] uppercase mb-xs">Queue Number</p>
+<p class="font-dimensions text-display leading-none">A001</p>
+<p class="font-dimensions text-[10px] text-text-secondary mt-sm">Order: ORD-2023-145</p>
+</div>
+<div class="font-dimensions text-[12px] mb-md border-b border-dashed border-outline-variant pb-md">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-surface-variant">
+<th class="pb-xs font-normal">Qty</th>
+<th class="pb-xs font-normal">Item</th>
+<th class="pb-xs font-normal text-right">Amt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="py-xs align-top">1</td>
+<td class="py-xs">Nordic Oat Latte<br><span class="text-[10px] text-text-secondary">+ Extra Shot<br>+ Vanilla</span></td>
+<td class="py-xs text-right align-top">5.50</td>
+</tr>
+<tr>
+<td class="py-xs align-top">2</td>
+<td class="py-xs">Swedish Cinnamon Bun<br><span class="text-[10px] text-text-secondary">Warmed</span></td>
+<td class="py-xs text-right align-top">7.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="font-dimensions text-[12px] mb-md">
+<div class="flex justify-between mb-xs">
+<span class="">Subtotal</span>
+<span class="">12.50</span>
+</div>
+<div class="flex justify-between mb-xs">
+<span class="">Tax</span>
+<span class="">1.00</span>
+</div>
+<div class="flex justify-between font-bold text-[14px] mt-xs pt-xs border-t border-surface-variant">
+<span class="">TOTAL</span>
+<span class="">$13.50</span>
+</div>
+<div class="flex justify-between mt-sm text-text-secondary">
+<span class="">Paid via Card</span>
+<span class="">13.50</span>
+</div>
+</div>
+<div class="mb-md border-t border-dashed border-outline-variant pt-md text-center">
+  <p class="font-dimensions text-[12px] font-bold mb-sm">สแกนเพื่อชำระเงิน (Scan to Pay)</p>
+  <div class="bg-white p-xs inline-block border border-border mb-sm">
+    <div class="w-32 h-32 relative"><img src="https://promptpay.io/1580400170896/13.50.png" class="w-full h-full object-cover" alt="Payment QR Code"><div class="absolute inset-0 flex items-center justify-center"><div class="bg-white p-1 rounded-sm"><img src="https://lh3.googleusercontent.com/aida/AP1WRLscMW3xThVEJkMAUyEF3WSwSDlGcFyvjYP7ij8Ryx869e-A5RuGC-bmKWfwgicMWUnmLZkUdX-KN2SJvjRuGiimQpgLeczmrlY1owdUHntkn--PEPrm3GKTM05WzLr-PjolTDTzTgAHUH2rRsNmxwIdiUQR-c_6gpXgg781PLvLbk0O_kKxl2jDTcYHyCnLxAQZ2sbq0Xap3vE8LVtWsOvdGY0G-VzLhNz77xlRYvenRN-2AY0yXNWhdq4" class="w-6 h-6 object-cover" alt="Logo"></div></div></div>
+  </div>
+  <p class="font-dimensions text-[10px] text-text-secondary">PromptPay ID: 0-1234-56789-01-2</p>
+</div><div class="text-center font-dimensions text-[10px] pb-md">
+<p class="">Thank you for choosing FikaSmart!</p>
+<p class="mt-xs">Tack så mycket!</p>
+</div>
+</div>
+<div class="zigzag-bottom"></div>
+</div>
+</div>
+</main>
+
+
+</body></html>

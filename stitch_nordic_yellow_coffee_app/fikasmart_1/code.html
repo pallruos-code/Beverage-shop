@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FikaSmart - แดชบอร์ดผู้ดูแลระบบ</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#705e00",
+                        "surface-container-high": "#e9e8e7",
+                        "surface": "#FFFFFF",
+                        "secondary-fixed": "#ffe164",
+                        "primary-container": "#003399",
+                        "outline": "#747684",
+                        "inverse-on-surface": "#f2f0f0",
+                        "primary": "#002068",
+                        "outline-variant": "#c4c5d5",
+                        "surface-tint": "#3557bc",
+                        "border": "#DFDFDF",
+                        "tertiary-fixed-dim": "#6edf58",
+                        "tertiary-container": "#034800",
+                        "inverse-primary": "#b5c4ff",
+                        "on-surface": "#1b1c1c",
+                        "on-background": "#1b1c1c",
+                        "surface-container-low": "#f5f3f3",
+                        "on-error-container": "#93000a",
+                        "secondary": "#6f5d00",
+                        "text-secondary": "#484848",
+                        "on-surface-variant": "#444653",
+                        "inverse-surface": "#303031",
+                        "on-tertiary-fixed": "#012200",
+                        "on-tertiary-container": "#4ebe3c",
+                        "background": "#F5F5F5",
+                        "error": "#CC0008",
+                        "primary-fixed-dim": "#b5c4ff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-container": "#8aa4ff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#dce1ff",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#8afc71",
+                        "surface-dim": "#dbdad9",
+                        "primary-hover": "#002B80",
+                        "text-primary": "#111111",
+                        "on-secondary-fixed": "#221b00",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#153ea3",
+                        "on-tertiary-fixed-variant": "#045300",
+                        "secondary-fixed-dim": "#e7c400",
+                        "tertiary": "#012f00",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-secondary-fixed-variant": "#544600",
+                        "secondary-container": "#fdd816",
+                        "surface-container": "#efeded",
+                        "error-container": "#ffdad6",
+                        "warning": "#E87400",
+                        "on-primary-fixed": "#00164e",
+                        "on-error": "#ffffff",
+                        "surface-bright": "#fbf9f9",
+                        "surface-variant": "#e3e2e2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "8px",
+                        "base": "4px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "md": "16px",
+                        "gutter-desktop": "20px",
+                        "container-max": "1400px",
+                        "xxl": "64px",
+                        "sm": "12px",
+                        "gutter-mobile": "8px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Noto Sans"],
+                        "body-sm": ["Noto Sans"],
+                        "h1": ["Noto Sans"],
+                        "price": ["Noto Sans"],
+                        "display": ["Noto Sans"],
+                        "product-name": ["Noto Sans"],
+                        "label": ["Noto Sans"],
+                        "caption": ["Noto Sans"],
+                        "body": ["Noto Sans"],
+                        "h3": ["Noto Sans"],
+                        "dimensions": ["JetBrains Mono"],
+                        "h1-mobile": ["Noto Sans"]
+                    },
+                    "fontSize": {
+                        "h2": ["24px", { "lineHeight": "31.2px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+                        "h1": ["32px", { "lineHeight": "41.6px", "fontWeight": "700" }],
+                        "price": ["24px", { "lineHeight": "31.2px", "fontWeight": "700" }],
+                        "display": ["40px", { "lineHeight": "52px", "fontWeight": "700" }],
+                        "product-name": ["16px", { "lineHeight": "24px", "fontWeight": "700" }],
+                        "label": ["15px", { "lineHeight": "20px", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "h3": ["18px", { "lineHeight": "23.4px", "fontWeight": "700" }],
+                        "dimensions": ["14px", { "lineHeight": "21px", "fontWeight": "400" }],
+                        "h1-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body w-full min-h-screen flex overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-[260px] bg-primary flex flex-col shrink-0 h-screen border-r border-primary-hover shadow-[4px_0_12px_rgba(0,0,0,0.1)] z-20">
+<!-- Brand / Logo -->
+<div class="h-[80px] flex items-center px-lg border-b border-primary-hover">
+<span class="font-h2 text-h2 text-secondary-container tracking-tight">FikaSmart<span class="text-on-primary font-body text-body ml-base">Admin</span></span>
+</div>
+<!-- Nav Links -->
+<nav class="flex-1 px-sm py-lg flex flex-col gap-base overflow-y-auto">
+<!-- Active Link -->
+<a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label text-label">แดชบอร์ด</span>
+</a>
+<!-- Inactive Links -->
+<a class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label text-label">คำสั่งซื้อ</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label text-label">สินค้า</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">warehouse</span>
+<span class="font-label text-label">คลังสินค้า</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">badge</span>
+<span class="font-label text-label">พนักงาน</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors group" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label text-label">รายงาน</span>
+</a>
+</nav>
+<!-- User Profile minimal -->
+<div class="p-lg border-t border-primary-hover flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-h3 text-h3">
+                M
+            </div>
+<div class="flex flex-col">
+<span class="font-label text-label text-on-primary">Manager</span>
+<span class="font-caption text-caption text-on-primary opacity-70">สาขาหลัก</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden bg-background relative">
+<!-- Top Header Area -->
+<header class="h-[80px] bg-surface border-b border-border flex items-center justify-between px-xl shrink-0 z-10 shadow-sm">
+<h1 class="font-h1 text-h1 text-primary">ภาพรวมระบบ</h1>
+<div class="flex items-center gap-md">
+<button class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface transition-colors border border-border">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="h-[44px] px-lg bg-primary hover:bg-primary-hover text-on-primary font-label text-label rounded-DEFAULT flex items-center gap-xs transition-colors">
+<span class="material-symbols-outlined" style="font-size: 20px;">add</span>
+                    สร้างคำสั่งซื้อใหม่
+                </button>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<div class="flex-1 overflow-y-auto p-xl">
+<div class="max-w-container-max mx-auto flex flex-col gap-xl">
+<!-- KPI Summary Cards (Bento Style Row 1) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<!-- Card 1: Today's Sales -->
+<div class="bg-surface border border-border rounded-lg p-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] flex flex-col relative overflow-hidden">
+<!-- Yellow accent strip -->
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary-container"></div>
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label text-label text-outline">ยอดขายวันนี้</span>
+<span class="material-symbols-outlined text-secondary-container bg-surface-container w-8 h-8 flex items-center justify-center rounded-full">payments</span>
+</div>
+<div class="flex items-baseline gap-sm mt-auto">
+<span class="font-display text-display text-primary tracking-tight">฿42,500</span>
+<span class="font-body-sm text-body-sm text-tertiary-container bg-tertiary-fixed-dim px-2 py-0.5 rounded-sm flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> 12%
+                            </span>
+</div>
+</div>
+<!-- Card 2: Total Orders -->
+<div class="bg-surface border border-border rounded-lg p-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] flex flex-col">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label text-label text-outline">จำนวนคำสั่งซื้อทั้งหมด</span>
+<span class="material-symbols-outlined text-primary bg-surface-container w-8 h-8 flex items-center justify-center rounded-full">shopping_bag</span>
+</div>
+<div class="flex items-baseline gap-sm mt-auto">
+<span class="font-display text-display text-primary tracking-tight">142</span>
+<span class="font-body-sm text-body-sm text-outline">ออเดอร์</span>
+</div>
+</div>
+<!-- Card 3: Average Wait Time -->
+<div class="bg-surface border border-border rounded-lg p-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] flex flex-col">
+<div class="flex items-center justify-between mb-sm">
+<span class="font-label text-label text-outline">เวลารอเฉลี่ย</span>
+<span class="material-symbols-outlined text-warning bg-surface-container w-8 h-8 flex items-center justify-center rounded-full">timer</span>
+</div>
+<div class="flex items-baseline gap-sm mt-auto">
+<span class="font-dimensions text-display text-primary tracking-tight">04:30</span>
+<span class="font-body-sm text-body-sm text-outline">นาที</span>
+</div>
+</div>
+</div>
+<!-- Main Content Grid (Bento Style Row 2) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Chart Section (Spans 2 cols) -->
+<div class="bg-surface border border-border rounded-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] lg:col-span-2 flex flex-col">
+<div class="p-lg border-b border-border flex items-center justify-between">
+<h2 class="font-h2 text-h2 text-primary">สินค้าขายดี</h2>
+<select class="h-10 border border-border rounded-DEFAULT bg-surface px-md font-body-sm text-body-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+<option>วันนี้</option>
+<option>สัปดาห์นี้</option>
+<option>เดือนนี้</option>
+</select>
+</div>
+<div class="p-lg flex-1 flex flex-col justify-end min-h-[300px] gap-md">
+<!-- Simulated Bar Chart using HTML/CSS for strict layout control -->
+<div class="flex items-end h-full gap-lg relative pt-lg">
+<!-- Horizontal Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 z-0">
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+<div class="border-b border-outline w-full h-0"></div>
+</div>
+<!-- Bars -->
+<div class="flex-1 flex flex-col items-center gap-sm z-10 group">
+<div class="w-full bg-primary rounded-t-sm h-[80%] transition-all group-hover:bg-primary-hover relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 font-dimensions text-caption text-primary opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-2 py-1 rounded shadow-sm border border-border">85</div>
+</div>
+<span class="font-caption text-caption text-outline text-center">ลาเต้เย็น</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-sm z-10 group">
+<div class="w-full bg-secondary-container rounded-t-sm h-[65%] transition-all relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 font-dimensions text-caption text-on-secondary-container opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-2 py-1 rounded shadow-sm border border-border">62</div>
+</div>
+<span class="font-caption text-caption text-outline text-center">อเมริกาโน่</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-sm z-10 group">
+<div class="w-full bg-primary rounded-t-sm h-[40%] transition-all group-hover:bg-primary-hover relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 font-dimensions text-caption text-primary opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-2 py-1 rounded shadow-sm border border-border">45</div>
+</div>
+<span class="font-caption text-caption text-outline text-center">คาปูชิโน่</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-sm z-10 group">
+<div class="w-full bg-primary rounded-t-sm h-[30%] transition-all group-hover:bg-primary-hover relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 font-dimensions text-caption text-primary opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-2 py-1 rounded shadow-sm border border-border">30</div>
+</div>
+<span class="font-caption text-caption text-outline text-center">มอคค่า</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-sm z-10 group">
+<div class="w-full bg-outline-variant rounded-t-sm h-[20%] transition-all relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 font-dimensions text-caption text-outline opacity-0 group-hover:opacity-100 transition-opacity bg-surface px-2 py-1 rounded shadow-sm border border-border">18</div>
+</div>
+<span class="font-caption text-caption text-outline text-center">มัทฉะ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Actions / Mini Panel (1 Col) -->
+<div class="bg-surface border border-border rounded-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] flex flex-col overflow-hidden">
+<div class="p-lg border-b border-border bg-primary text-on-primary">
+<h2 class="font-h2 text-h2">แจ้งเตือนสถานะ</h2>
+</div>
+<div class="flex-1 p-0 flex flex-col">
+<!-- Alert Item -->
+<div class="p-md border-b border-surface-container flex items-start gap-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-warning mt-1">warning</span>
+<div>
+<p class="font-label text-label text-on-surface">เมล็ดกาแฟคั่วกลางใกล้หมด</p>
+<p class="font-body-sm text-body-sm text-outline">เหลืออีกเพียง 2 กก. กรุณาสั่งซื้อเพิ่ม</p>
+</div>
+</div>
+<!-- Alert Item -->
+<div class="p-md border-b border-surface-container flex items-start gap-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-tertiary-container mt-1">check_circle</span>
+<div>
+<p class="font-label text-label text-on-surface">รับสินค้าสำเร็จ</p>
+<p class="font-body-sm text-body-sm text-outline">รายการ PO-2023-145 เข้าคลังแล้ว</p>
+</div>
+</div>
+<!-- Alert Item -->
+<div class="p-md flex items-start gap-md hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-primary mt-1">info</span>
+<div>
+<p class="font-label text-label text-on-surface">อัปเดตระบบใหม่</p>
+<p class="font-body-sm text-body-sm text-outline">เวอร์ชัน 2.4.1 พร้อมใช้งาน</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Orders Table Section -->
+<div class="bg-surface border border-border rounded-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] overflow-hidden">
+<div class="p-lg border-b border-border flex items-center justify-between bg-surface">
+<h2 class="font-h2 text-h2 text-primary">คำสั่งซื้อล่าสุด</h2>
+<a class="font-label text-label text-primary hover:text-primary-hover flex items-center gap-xs" href="#">
+                            ดูทั้งหมด <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+</a>
+</div>
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-border">
+<th class="p-md font-label text-label text-outline whitespace-nowrap">รหัสออเดอร์</th>
+<th class="p-md font-label text-label text-outline whitespace-nowrap">เวลา</th>
+<th class="p-md font-label text-label text-outline whitespace-nowrap">รายการ</th>
+<th class="p-md font-label text-label text-outline whitespace-nowrap">จำนวนเงิน</th>
+<th class="p-md font-label text-label text-outline whitespace-nowrap">สถานะ</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-md font-dimensions text-body-sm text-primary font-bold">#ORD-8901</td>
+<td class="p-md font-dimensions text-body-sm text-on-surface-variant">14:22</td>
+<td class="p-md font-body-sm text-body-sm text-on-surface">ลาเต้เย็น (x2), ครัวซองต์</td>
+<td class="p-md font-dimensions text-body-sm text-on-surface">฿240</td>
+<td class="p-md">
+<span class="inline-flex items-center px-2 py-1 rounded-sm bg-secondary-container text-on-secondary-container font-caption text-caption">
+                                            กำลังเตรียม
+                                        </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-md font-dimensions text-body-sm text-primary font-bold">#ORD-8900</td>
+<td class="p-md font-dimensions text-body-sm text-on-surface-variant">14:15</td>
+<td class="p-md font-body-sm text-body-sm text-on-surface">อเมริกาโน่ร้อน</td>
+<td class="p-md font-dimensions text-body-sm text-on-surface">฿80</td>
+<td class="p-md">
+<span class="inline-flex items-center px-2 py-1 rounded-sm bg-tertiary-fixed-dim text-tertiary-container font-caption text-caption">
+                                            เสร็จสิ้น
+                                        </span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-md font-dimensions text-body-sm text-primary font-bold">#ORD-8899</td>
+<td class="p-md font-dimensions text-body-sm text-on-surface-variant">14:05</td>
+<td class="p-md font-body-sm text-body-sm text-on-surface">มัทฉะลาเต้, แซนด์วิชแฮมชีส</td>
+<td class="p-md font-dimensions text-body-sm text-on-surface">฿210</td>
+<td class="p-md">
+<span class="inline-flex items-center px-2 py-1 rounded-sm bg-tertiary-fixed-dim text-tertiary-container font-caption text-caption">
+                                            เสร็จสิ้น
+                                        </span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-md font-dimensions text-body-sm text-primary font-bold">#ORD-8898</td>
+<td class="p-md font-dimensions text-body-sm text-on-surface-variant">13:50</td>
+<td class="p-md font-body-sm text-body-sm text-on-surface">คาปูชิโน่เย็น</td>
+<td class="p-md font-dimensions text-body-sm text-on-surface">฿95</td>
+<td class="p-md">
+<span class="inline-flex items-center px-2 py-1 rounded-sm bg-surface-variant text-outline font-caption text-caption border border-border">
+                                            ยกเลิก
+                                        </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
