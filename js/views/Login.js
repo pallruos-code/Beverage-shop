@@ -90,9 +90,32 @@ export function renderLogin() {
 
     // Functionality
     const loginForm = container.querySelector('#login-form');
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        store.navigate('admin'); // Simulate successful login navigating to admin
+        const email = loginForm.querySelector('#email').value;
+        const password = loginForm.querySelector('#password').value;
+        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'กำลังตรวจสอบ...';
+        
+        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+            
+            if (error) {
+                alert('เกิดข้อผิดพลาด: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'เข้าสู่ระบบ <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>';
+            } else {
+                store.navigate('admin');
+            }
+        } else {
+            // Fallback for offline/no supabase configuration
+            store.navigate('admin');
+        }
     });
 
     const togglePasswordBtn = container.querySelector('#toggle-password');

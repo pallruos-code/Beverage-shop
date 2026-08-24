@@ -4,10 +4,14 @@ export function renderKDS() {
     const container = document.createElement('div');
     container.className = 'w-full min-h-screen bg-background text-on-background font-body flex flex-col';
 
-    const orders = store.state.orders;
-    const newOrders = orders.filter(o => o.status === 'new');
-    const preparingOrders = orders.filter(o => o.status === 'preparing');
-    const readyOrders = orders.filter(o => o.status === 'ready');
+    const orders = store.state.orders || [];
+    const isNew = o => o.status === 'PENDING' || o.status === 'new' || o.order_status === 'PENDING' || o.order_status === 'new';
+    const isPreparing = o => o.status === 'PREPARING' || o.status === 'preparing' || o.order_status === 'PREPARING' || o.order_status === 'preparing';
+    const isReady = o => o.status === 'COMPLETED' || o.status === 'ready' || o.order_status === 'COMPLETED' || o.order_status === 'ready';
+
+    const newOrders = orders.filter(isNew);
+    const preparingOrders = orders.filter(isPreparing);
+    const readyOrders = orders.filter(isReady);
 
     container.innerHTML = `
         <!-- TopNavBar -->
@@ -32,32 +36,39 @@ export function renderKDS() {
                     <span class="bg-error text-on-error font-dimensions text-dimensions px-sm py-base rounded-full">${newOrders.length}</span>
                 </header>
                 <div class="flex-1 overflow-y-auto p-md flex flex-col gap-md">
-                    ${newOrders.map(order => `
-                        <article class="bg-surface rounded-lg border border-border p-md shadow-sm relative">
-                            <div class="flex justify-between items-start mb-xs">
-                                <span class="font-dimensions text-dimensions font-bold text-primary text-xl">${order.queue}</span>
-                                <span class="font-dimensions text-dimensions text-error">${order.timestamp}</span>
-                            </div>
-                            <div class="border-t border-border pt-xs mb-md">
-                                ${order.items.map(item => `
-                                    <div class="flex justify-between items-center py-base font-product-name text-product-name text-on-surface">
-                                        <span>${item.quantity}x ${item.name}</span>
-                                    </div>
-                                    ${item.options ? `
-                                        <ul class="font-body-sm text-body-sm text-text-secondary pl-lg list-disc">
-                                            <li>หวาน ${item.options.sweetness}%</li>
-                                            ${item.options.toppings.map(t => `<li>${t}</li>`).join('')}
-                                            ${item.options.notes ? `<li><em>${item.options.notes}</em></li>` : ''}
-                                        </ul>
-                                    ` : ''}
-                                `).join('')}
-                            </div>
-                            <button data-action="accept" data-id="${order.id}" class="w-full bg-primary text-on-primary font-label text-label h-[44px] rounded-DEFAULT hover:bg-primary-hover transition-colors flex justify-center items-center gap-xs">
-                                <span class="material-symbols-outlined">check</span> รับออเดอร์ (Accept)
-                            </button>
-                        </article>
-                    `).join('')}
-                    ${newOrders.length === 0 ? '<div class="text-center text-outline p-4 font-body-sm">No new orders</div>' : ''}
+                    ${newOrders.map(order => {
+                        const ordNum = order.queue || order.queue_number || order.id || order.order_number || 'N/A';
+                        const ordTime = order.timestamp || (order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A');
+                        const ordId = order.id || order.order_number;
+                        const items = order.items || [];
+                        return `
+                            <article class="bg-surface rounded-lg border border-border p-md shadow-sm relative">
+                                <div class="flex justify-between items-start mb-xs">
+                                    <span class="font-dimensions text-dimensions font-bold text-primary text-xl">${ordNum}</span>
+                                    <span class="font-dimensions text-dimensions text-error">${ordTime}</span>
+                                </div>
+                                <div class="border-t border-border pt-xs mb-md">
+                                    ${items.map(item => `
+                                        <div class="flex justify-between items-center py-base font-product-name text-product-name text-on-surface">
+                                            <span>${item.quantity}x ${item.name}</span>
+                                        </div>
+                                        ${item.options ? `
+                                            <ul class="font-body-sm text-body-sm text-text-secondary pl-lg list-disc">
+                                                <li>หวาน ${item.options.sweetness}%</li>
+                                                ${(item.options.toppings || []).map(t => `<li>${t}</li>`).join('')}
+                                                ${item.options.notes ? `<li><em>${item.options.notes}</em></li>` : ''}
+                                            </ul>
+                                        ` : ''}
+                                    `).join('')}
+                                    ${items.length === 0 ? '<p class="font-body-sm text-text-secondary text-center">ไม่มีรายละเอียดรายการ</p>' : ''}
+                                </div>
+                                <button data-action="accept" data-id="${ordId}" class="w-full bg-primary text-on-primary font-label text-label h-[44px] rounded-DEFAULT hover:bg-primary-hover transition-colors flex justify-center items-center gap-xs">
+                                    <span class="material-symbols-outlined">check</span> รับออเดอร์ (Accept)
+                                </button>
+                            </article>
+                        `;
+                    }).join('')}
+                    ${newOrders.length === 0 ? '<div class="text-center text-outline p-4 font-body-sm">ไม่มีออเดอร์ใหม่</div>' : ''}
                 </div>
             </section>
 
@@ -70,31 +81,39 @@ export function renderKDS() {
                     <span class="bg-secondary-container text-on-secondary-container font-dimensions text-dimensions px-sm py-base rounded-full">${preparingOrders.length}</span>
                 </header>
                 <div class="flex-1 overflow-y-auto p-md flex flex-col gap-md">
-                    ${preparingOrders.map(order => `
-                        <article class="bg-surface rounded-lg border-2 border-secondary-fixed p-md shadow-md relative">
-                            <div class="flex justify-between items-start mb-xs">
-                                <span class="font-dimensions text-dimensions font-bold text-primary text-xl">${order.queue}</span>
-                                <span class="font-dimensions text-dimensions text-text-secondary">${order.timestamp}</span>
-                            </div>
-                            <div class="border-t border-border pt-xs mb-md">
-                                ${order.items.map(item => `
-                                    <div class="flex justify-between items-center py-base font-product-name text-product-name text-on-surface">
-                                        <span>${item.quantity}x ${item.name}</span>
-                                    </div>
-                                    ${item.options ? `
-                                        <ul class="font-body-sm text-body-sm text-text-secondary pl-lg list-disc">
-                                            <li>หวาน ${item.options.sweetness}%</li>
-                                            ${item.options.toppings.map(t => `<li>${t}</li>`).join('')}
-                                        </ul>
-                                    ` : ''}
-                                `).join('')}
-                            </div>
-                            <button data-action="complete" data-id="${order.id}" class="w-full bg-tertiary-container text-on-tertiary-container font-label text-label h-[44px] rounded-DEFAULT hover:opacity-90 transition-opacity flex justify-center items-center gap-xs">
-                                <span class="material-symbols-outlined">done_all</span> เสร็จสิ้น (Complete)
-                            </button>
-                        </article>
-                    `).join('')}
-                    ${preparingOrders.length === 0 ? '<div class="text-center text-outline p-4 font-body-sm">No orders in preparation</div>' : ''}
+                    ${preparingOrders.map(order => {
+                        const ordNum = order.queue || order.queue_number || order.id || order.order_number || 'N/A';
+                        const ordTime = order.timestamp || (order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A');
+                        const ordId = order.id || order.order_number;
+                        const items = order.items || [];
+                        return `
+                            <article class="bg-surface rounded-lg border-2 border-secondary-fixed p-md shadow-md relative">
+                                <div class="flex justify-between items-start mb-xs">
+                                    <span class="font-dimensions text-dimensions font-bold text-primary text-xl">${ordNum}</span>
+                                    <span class="font-dimensions text-dimensions text-text-secondary">${ordTime}</span>
+                                </div>
+                                <div class="border-t border-border pt-xs mb-md">
+                                    ${items.map(item => `
+                                        <div class="flex justify-between items-center py-base font-product-name text-product-name text-on-surface">
+                                            <span>${item.quantity}x ${item.name}</span>
+                                        </div>
+                                        ${item.options ? `
+                                            <ul class="font-body-sm text-body-sm text-text-secondary pl-lg list-disc">
+                                                <li>หวาน ${item.options.sweetness}%</li>
+                                                ${(item.options.toppings || []).map(t => `<li>${t}</li>`).join('')}
+                                                ${item.options.notes ? `<li><em>${item.options.notes}</em></li>` : ''}
+                                            </ul>
+                                        ` : ''}
+                                    `).join('')}
+                                    ${items.length === 0 ? '<p class="font-body-sm text-text-secondary text-center">ไม่มีรายละเอียดรายการ</p>' : ''}
+                                </div>
+                                <button data-action="complete" data-id="${ordId}" class="w-full bg-tertiary-container text-on-tertiary-container font-label text-label h-[44px] rounded-DEFAULT hover:opacity-90 transition-opacity flex justify-center items-center gap-xs">
+                                    <span class="material-symbols-outlined">done_all</span> เสร็จสิ้น (Complete)
+                                </button>
+                            </article>
+                        `;
+                    }).join('')}
+                    ${preparingOrders.length === 0 ? '<div class="text-center text-outline p-4 font-body-sm">ไม่มีออเดอร์กำลังเตรียม</div>' : ''}
                 </div>
             </section>
 
@@ -107,23 +126,27 @@ export function renderKDS() {
                     <span class="bg-outline-variant text-on-surface-variant font-dimensions text-dimensions px-sm py-base rounded-full">${readyOrders.length}</span>
                 </header>
                 <div class="flex-1 overflow-y-auto p-md flex flex-col gap-md">
-                    ${readyOrders.map(order => `
-                        <article class="bg-surface rounded-lg border border-border p-md shadow-sm relative">
-                            <div class="flex justify-between items-start mb-xs">
-                                <span class="font-dimensions text-dimensions font-bold text-outline text-xl line-through">${order.queue}</span>
-                                <span class="font-caption text-caption text-text-secondary flex items-center gap-xs bg-surface-container px-sm py-base rounded-full">
-                                    <span class="material-symbols-outlined text-sm">check_circle</span>
-                                    รอรับ
-                                </span>
-                            </div>
-                            <div class="border-t border-border pt-xs">
-                                <div class="flex justify-between items-center py-base">
-                                    <span class="font-body-sm text-body-sm text-text-secondary">${order.items.reduce((acc, i)=>acc+i.quantity,0)} Items</span>
+                    ${readyOrders.map(order => {
+                        const ordNum = order.queue || order.queue_number || order.id || order.order_number || 'N/A';
+                        const itemsCount = order.items ? order.items.reduce((acc, i) => acc + i.quantity, 0) : 0;
+                        return `
+                            <article class="bg-surface rounded-lg border border-border p-md shadow-sm relative">
+                                <div class="flex justify-between items-start mb-xs">
+                                    <span class="font-dimensions text-dimensions font-bold text-outline text-xl line-through">${ordNum}</span>
+                                    <span class="font-caption text-caption text-text-secondary flex items-center gap-xs bg-surface-container px-sm py-base rounded-full">
+                                        <span class="material-symbols-outlined text-sm">check_circle</span>
+                                        รอรับ
+                                    </span>
                                 </div>
-                            </div>
-                        </article>
-                    `).join('')}
-                    ${readyOrders.length === 0 ? '<div class="text-center text-outline p-4 font-body-sm">No orders ready</div>' : ''}
+                                <div class="border-t border-border pt-xs">
+                                    <div class="flex justify-between items-center py-base">
+                                        <span class="font-body-sm text-body-sm text-text-secondary">${itemsCount} รายการ</span>
+                                    </div>
+                                </div>
+                            </article>
+                        `;
+                    }).join('')}
+                    ${readyOrders.length === 0 ? '<div class="text-center text-outline p-4 font-body-sm">ไม่มีออเดอร์รอรับ</div>' : ''}
                 </div>
             </section>
         </main>
@@ -136,14 +159,14 @@ export function renderKDS() {
     container.querySelectorAll('button[data-action="accept"]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const orderId = e.currentTarget.dataset.id;
-            store.updateOrderStatus(orderId, 'preparing');
+            store.updateOrderStatus(orderId, 'PREPARING');
         });
     });
 
     container.querySelectorAll('button[data-action="complete"]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const orderId = e.currentTarget.dataset.id;
-            store.updateOrderStatus(orderId, 'ready');
+            store.updateOrderStatus(orderId, 'COMPLETED');
         });
     });
 

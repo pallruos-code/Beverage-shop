@@ -4,6 +4,16 @@ export function renderAdmin() {
     const container = document.createElement('div');
     container.className = 'w-full min-h-screen flex overflow-hidden bg-background text-on-surface font-body';
 
+    const ordersList = store.state.orders || [];
+    
+    // Calculate total sales from all orders
+    const totalSales = ordersList.reduce((sum, o) => {
+        const amt = o.total !== undefined ? o.total : (o.total_amount !== undefined ? Number(o.total_amount) : 0);
+        return sum + amt;
+    }, 0);
+
+    const totalOrdersCount = ordersList.length;
+
     container.innerHTML = `
         <!-- Sidebar Navigation -->
         <aside class="w-[260px] bg-primary flex flex-col shrink-0 h-screen border-r border-primary-hover shadow-[4px_0_12px_rgba(0,0,0,0.1)] z-20">
@@ -70,14 +80,11 @@ export function renderAdmin() {
                         <div class="bg-surface border border-border rounded-lg p-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] flex flex-col relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1 bg-secondary-container"></div>
                             <div class="flex items-center justify-between mb-sm">
-                                <span class="font-label text-label text-outline">ยอดขายวันนี้</span>
+                                <span class="font-label text-label text-outline">ยอดขายทั้งหมด</span>
                                 <span class="material-symbols-outlined text-secondary-container bg-surface-container w-8 h-8 flex items-center justify-center rounded-full">payments</span>
                             </div>
                             <div class="flex items-baseline gap-sm mt-auto">
-                                <span class="font-display text-display text-primary tracking-tight">฿42,500</span>
-                                <span class="font-body-sm text-body-sm text-tertiary-container bg-tertiary-fixed-dim px-2 py-0.5 rounded-sm flex items-center gap-1">
-                                    <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span> 12%
-                                </span>
+                                <span class="font-display text-display text-primary tracking-tight">฿${totalSales.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                             </div>
                         </div>
                         
@@ -87,7 +94,7 @@ export function renderAdmin() {
                                 <span class="material-symbols-outlined text-primary bg-surface-container w-8 h-8 flex items-center justify-center rounded-full">shopping_bag</span>
                             </div>
                             <div class="flex items-baseline gap-sm mt-auto">
-                                <span class="font-display text-display text-primary tracking-tight">142</span>
+                                <span class="font-display text-display text-primary tracking-tight">${totalOrdersCount}</span>
                                 <span class="font-body-sm text-body-sm text-outline">ออเดอร์</span>
                             </div>
                         </div>
@@ -120,15 +127,41 @@ export function renderAdmin() {
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-border">
-                                    <tr class="hover:bg-surface-container-lowest transition-colors">
-                                        <td class="p-md font-dimensions text-body-sm text-primary font-bold">#ORD-8901</td>
-                                        <td class="p-md font-dimensions text-body-sm text-on-surface-variant">14:22</td>
-                                        <td class="p-md font-body-sm text-body-sm text-on-surface">ลาเต้เย็น (x2), ครัวซองต์</td>
-                                        <td class="p-md font-dimensions text-body-sm text-on-surface">฿240</td>
-                                        <td class="p-md">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-sm bg-secondary-container text-on-secondary-container font-caption text-caption">กำลังเตรียม</span>
-                                        </td>
-                                    </tr>
+                                    ${ordersList.map(order => {
+                                        const ordNum = order.id || order.order_number || 'N/A';
+                                        const ordTime = order.timestamp || (order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A');
+                                        const ordTotal = order.total !== undefined ? order.total : (order.total_amount !== undefined ? Number(order.total_amount) : 0);
+                                        const ordStatus = order.status || order.order_status || 'PENDING';
+                                        
+                                        let itemsText = 'ไม่มีรายละเอียด';
+                                        if (order.items && order.items.length > 0) {
+                                            itemsText = order.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
+                                        }
+                                        
+                                        let statusBadge = '';
+                                        if (ordStatus === 'PENDING' || ordStatus === 'new') {
+                                            statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded-sm bg-primary/10 text-primary font-caption text-caption">ออเดอร์ใหม่</span>';
+                                        } else if (ordStatus === 'PREPARING' || ordStatus === 'preparing') {
+                                            statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded-sm bg-secondary-container text-on-secondary-container font-caption text-caption">กำลังเตรียม</span>';
+                                        } else if (ordStatus === 'COMPLETED' || ordStatus === 'ready') {
+                                            statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded-sm bg-tertiary-container text-on-tertiary-container font-caption text-caption">พร้อมเสิร์ฟ</span>';
+                                        } else {
+                                            statusBadge = `<span class="inline-flex items-center px-2 py-1 rounded-sm bg-outline-variant text-on-surface font-caption text-caption">${ordStatus}</span>`;
+                                        }
+                                        
+                                        return `
+                                            <tr class="hover:bg-surface-container-lowest transition-colors">
+                                                <td class="p-md font-dimensions text-body-sm text-primary font-bold">#${ordNum}</td>
+                                                <td class="p-md font-dimensions text-body-sm text-on-surface-variant">${ordTime}</td>
+                                                <td class="p-md font-body-sm text-body-sm text-on-surface">${itemsText}</td>
+                                                <td class="p-md font-dimensions text-body-sm text-on-surface">฿${ordTotal.toFixed(2)}</td>
+                                                <td class="p-md">
+                                                    ${statusBadge}
+                                                </td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                    ${ordersList.length === 0 ? '<tr><td colspan="5" class="p-md text-center text-outline font-body-sm">ไม่มีคำสั่งซื้อที่ค้างอยู่</td></tr>' : ''}
                                 </tbody>
                             </table>
                         </div>

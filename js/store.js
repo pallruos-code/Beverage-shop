@@ -1,4 +1,6 @@
 // store.js
+const getClient = () => (typeof getSupabase !== 'undefined' ? getSupabase() : null);
+
 export const store = {
     state: {
         cart: [],
@@ -73,15 +75,20 @@ export const store = {
         this.notify();
     },
     
-    checkout() {
+    async checkout() {
         if (this.state.cart.length === 0) return null;
         
+        const cartItems = [...this.state.cart];
+        const totalAmount = this.getCartTotal();
+        const orderNum = 'ORD-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(1000 + Math.random() * 9000);
+        const queueNum = 'A' + Math.floor(100 + Math.random() * 900);
+        
         const newOrder = {
-            id: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
-            queue: 'A' + Math.floor(100 + Math.random() * 900),
-            items: [...this.state.cart],
-            total: this.getCartTotal(),
-            status: 'new', // 'new', 'preparing', 'ready'
+            id: orderNum,
+            queue: queueNum,
+            items: cartItems,
+            total: totalAmount,
+            status: 'PENDING', // 'PENDING', 'PREPARING', 'COMPLETED'
             timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         };
         
@@ -89,48 +96,265 @@ export const store = {
         this.state.cart = []; // Empty cart
         this.notify();
         
+        // Insert into Supabase (Relational Database Inserts)
+        const client = getClient();
+        if (client) {
+            try {
+                // 1. Insert into orders
+                const { data: orderData, error: orderError } = await client
+                    .from('orders')
+                    .insert([
+                        {
+                            order_number: orderNum,
+                            queue_number: queueNum,
+                            total_amount: totalAmount,
+                            order_status: 'PENDING',
+                            payment_status: 'PENDING',
+                            estimated_waiting_time: 10
+                        }
+                    ])
+                    .select();
+                
+                if (orderError) throw orderError;
+                if (orderData && orderData.length > 0) {
+                    const orderUuid = orderData[0].id;
+                    newOrder.db_id = orderUuid; // Cache the UUID key locally
+                    
+                    // 2. Insert into order_details (bulk insert)
+                    const detailsToInsert = cartItems.map(item => {
+                        // Find matching product UUID from products state
+                        let prodId = item.id;
+                        const match = products.find(p => p.name === item.name || p.id === item.id);
+                        if (match) prodId = match.id;
+                        
+                        return {
+                            order_id: orderUuid,
+                            product_id: prodId,
+                            quantity: item.quantity,
+                            sweetness_level: item.options && item.options.sweetness ? `${item.options.sweetness}%` : '100%',
+                            unit_price: item.price,
+                            subtotal_price: (item.finalPrice || item.price) * item.quantity,
+                            note: item.options && item.options.notes ? item.options.notes : null
+                        };
+                    });
+                    
+                    const { data: detailsData, error: detailsError } = await client
+                        .from('order_details')
+                        .insert(detailsToInsert)
+                        .select();
+                        
+                    if (detailsError) throw detailsError;
+                    
+                    // 3. Insert into order_toppings (if any)
+                    const toppingsToInsert = [];
+                    cartItems.forEach((item, index) => {
+                        if (item.options && item.options.toppings && item.options.toppings.length > 0) {
+                            const detailRow = detailsData[index];
+                            if (detailRow) {
+                                item.options.toppings.forEach(toppingName => {
+                                    const toppingProduct = products.find(p => p.name.toLowerCase() === toppingName.toLowerCase() || p.id === toppingName);
+                                    if (toppingProduct) {
+                                        toppingsToInsert.push({
+                                            order_detail_id: detailRow.id,
+                                            topping_product_id: toppingProduct.id,
+                                            quantity: 1,
+                                            price_per_unit: toppingProduct.price || 0.30
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    
+                    if (toppingsToInsert.length > 0) {
+                        const { error: toppingsError } = await client
+                            .from('order_toppings')
+                            .insert(toppingsToInsert);
+                        if (toppingsError) throw toppingsError;
+                    }
+                }
+            } catch (err) {
+                console.error('Error saving order relationally to Supabase:', err);
+            }
+        }
+        
         return newOrder;
     },
     
     updateOrderStatus(orderId, newStatus) {
-        const order = this.state.orders.find(o => o.id === orderId);
+        const order = this.state.orders.find(o => o.id === orderId || o.order_number === orderId || o.db_id === orderId);
         if (order) {
             order.status = newStatus;
+            order.order_status = newStatus;
             this.notify();
+            
+            // Sync with Supabase
+            const client = getClient();
+            if (client) {
+                // Update both potential column names (status or order_status)
+                const updatePayload = {
+                    status: newStatus,
+                    order_status: newStatus
+                };
+                
+                // Match either id, order_number or db_id matching orderId
+                const matchId = order.db_id || orderId;
+                client.from('orders')
+                    .update(updatePayload)
+                    .or(`id.eq.${matchId},order_number.eq.${orderId}`)
+                    .then(({ error }) => {
+                        if (error) console.error('Error updating order status in Supabase:', error);
+                    });
+            }
         }
     }
 };
 
-// Default product data based on HTML prototypes
-export const products = [
-    {
-        id: 'p1',
-        name: 'นอร์ดิกโอ๊ตลาเต้',
-        description: 'เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา',
-        price: 4.50,
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA99hU035zko4CccqvPNBxtbuecMpqphwFBzq_eVscHGFW5sdrOoPposRxfSRViteQWpWAmuq2Hl11vx-WPc98MUMy99oWX4o_V3gnEUqKRSHxxP9JvICHJvbS2EUhTfsNaMreTAcKOHlfM0TTyY40WpAO0rbIvDs8AOtTP_FoKLpaE0_WirhfS9fhurLFp81eCcWCKTxpTfbIBIWifrJuDM72OCK7Veqj3wyb1z4T2XQQ8j-Y7kACVyhZl2uEJrh6jx7myuGHGp9g',
-        tag: 'เพื่อความยั่งยืน'
-    },
-    {
-        id: 'p2',
-        name: 'ฟังก์ชันนัลเอสเพรสโซ่',
-        description: 'เอสเพรสโซ่เข้มข้น 2 ช็อตจากเมล็ดคั่วเข้ม เพื่อพลังงาน...',
-        price: 3.00,
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBUe1lmWVWobh8HD_c4dVOfu3WIHFvLWz_Vq41hG3pbLCiIfw72mpYpXZyfOxnnLdJloNLkQmZY_Nl5t5ucANB4GwsnV14tgPZ7eXFMxE-K6b8eVY7hy0pEZMixbzhyylZnaxjqK544SD5W9sT0I18V-pyt3XfX2r5kCodDlbtXdwKhpvt8WFGxQ1UI4t3YO-n3fVV-QHAkyvSDJAuWmO-03HKVjvFmQ-LC2OQx9bgLNoROpZ0l3378XsTxOE3RayGnjPgKf37cKBY'
-    },
-    {
-        id: 'p3',
-        name: 'แคลริตี้กรีนที (ชาเขียว)',
-        description: 'ใบชาเซนฉะชั้นดี ให้ความรู้สึกสดชื่นเบาสบาย...',
-        price: 3.50,
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuARSEvQVMz71-aI1HiLqamp5ik21567ajyGPxI9E9rvuWLtbQHoQvUK2LGCdrrNc8VukhtkViRgnb16WJPb07CzYm1AC9ClmYz-L8ZqGohEB7qIRfIPYlErbHVQKIDBo6Wps6FOAZVpMvnDWGPWrsEL-xhk7ycne__PNe_H_Pw1ioJZ6UuOmPyN4E5uLDXHmbkNiXoC9Hq9t8p8_4Yi2zRo4x4a42afl0Hog1Hxj7FD040EnowsDgC5vUp_63o-CR0-BtN3_0Jw-Nc',
-        tag: 'เพื่อความยั่งยืน'
-    },
-    {
-        id: 'p4',
-        name: 'ซิตรัสไฮเดรเตอร์',
-        description: 'น้ำโซดาเย็นจัด ผสมเลมอนสกัดเย็น และ...',
-        price: 4.00,
-        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCy0S_gglJsHJfAAYRkJlcDNVRlcxKjcI8LZQQsflVIMD6GdO2zGqNAJ6CiB5W3YKAcz5haCdMriq7leqRcN70EQIx1D-AHyijwQuSNKuVwGTgeRjDxl3oCTcZAni9xDyr1wTpnTJnFWA3iN3mWum_CJ5NUEH5TfnPmKTN17ZbRcaB568vPBpVoqnuU63QvHTmCmJS5G90D4x1cRtdm98AEZAF7RLJ_GxcVBMSy25pVw1Qb2wdc9mTrUwNYRCHDXT55oFy5__c05SQ'
+export let products = [];
+
+export async function fetchProducts() {
+    const defaultProducts = [
+        {
+            id: 'a1111111-1111-1111-1111-111111111111',
+            name: 'นอร์ดิกโอ๊ตลาเต้',
+            description: 'เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา',
+            price: 4.50,
+            tag: 'เพื่อความยั่งยืน',
+            image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=600'
+        },
+        {
+            id: 'a2222222-2222-2222-2222-222222222222',
+            name: 'ฟังก์ชันนัลเอสเพรสโซ่',
+            description: 'เอสเพรสโซ่เข้มข้น 2 ช็อตจากเมล็ดคั่วเข้ม เพื่อพลังงานสูงสุดในการเริ่มต้นวันใหม่',
+            price: 3.00,
+            tag: 'ขายดี',
+            image: 'https://images.unsplash.com/photo-1510707577719-ee7c18304e3c?auto=format&fit=crop&q=80&w=600'
+        },
+        {
+            id: 'a3333333-3333-3333-3333-333333333333',
+            name: 'แคลริตี้กรีนที (ชาเขียว)',
+            description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย และเบาสบายตลอดวัน',
+            price: 3.50,
+            tag: 'ออร์แกนิก',
+            image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&q=80&w=600'
+        },
+        {
+            id: 'a4444444-4444-4444-4444-444444444444',
+            name: 'ซิตรัสไฮเดรเตอร์',
+            description: 'น้ำโซดาเย็นจัด ผสมเลมอนและส้มสกัดเย็น ให้ความสดชื่นทันทีที่ดื่ม',
+            price: 4.00,
+            tag: 'สดชื่น',
+            image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600'
+        }
+    ];
+
+    const client = getClient();
+    if (client) {
+        const { data, error } = await client.from('products').select('*');
+        if (error) {
+            console.error('Error fetching products from Supabase:', error);
+            products = defaultProducts;
+        } else {
+            const mapped = (data || []).map(p => ({
+                ...p,
+                price: Number(p.price)
+            }));
+            products = mapped.length > 0 ? mapped : defaultProducts;
+        }
+    } else {
+        products = defaultProducts;
     }
-];
+    store.notify();
+}
+
+export async function fetchOrders() {
+    const client = getClient();
+    if (client) {
+        // Query orders with nested relation data (order_details, order_toppings, products)
+        const { data, error } = await client
+            .from('orders')
+            .select(`
+                *,
+                order_details (
+                    *,
+                    product:products (
+                        name
+                    ),
+                    order_toppings (
+                        *,
+                        topping_product:products (
+                            name
+                        )
+                    )
+                )
+            `);
+            
+        if (error) {
+            console.error('Error fetching orders from Supabase:', error);
+        } else {
+            // Map database relational structure back to flat frontend structure
+            const mappedOrders = (data || []).map(order => {
+                const items = (order.order_details || []).map(detail => {
+                    const toppings = (detail.order_toppings || []).map(topping => {
+                        const tp = topping.topping_product || topping.products || topping.product;
+                        return tp ? tp.name : 'Unknown Topping';
+                    });
+                    
+                    const prod = detail.product || detail.products;
+                    const prodName = prod ? prod.name : 'Unknown Drink';
+                    
+                    return {
+                        id: detail.product_id,
+                        name: prodName,
+                        quantity: detail.quantity,
+                        price: Number(detail.unit_price),
+                        finalPrice: Number(detail.subtotal_price) / detail.quantity,
+                        options: {
+                            sweetness: parseFloat(detail.sweetness_level) || 100,
+                            toppings: toppings,
+                            notes: detail.note
+                        }
+                    };
+                });
+                
+                return {
+                    id: order.order_number,
+                    db_id: order.id,
+                    queue: order.queue_number,
+                    items: items,
+                    total: Number(order.total_amount),
+                    status: order.order_status,
+                    timestamp: order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'
+                };
+            });
+            
+            store.state.orders = mappedOrders;
+            store.notify();
+        }
+    }
+}
+
+export function subscribeToOrders() {
+    const client = getClient();
+    if (client) {
+        client
+            .channel('schema-db-changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'orders'
+                },
+                (payload) => {
+                    fetchOrders();
+                }
+            )
+            .subscribe();
+    }
+}
+
+// Call fetch on load
+fetchProducts();
+fetchOrders();
+subscribeToOrders();
