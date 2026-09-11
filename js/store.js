@@ -1,6 +1,43 @@
 // store.js
 const getClient = () => (typeof getSupabase !== 'undefined' ? getSupabase() : null);
 
+// Google Apps Script Web App URL for syncing orders to Google Sheets
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyAbWrvkNrfQFg3h9txk0e1r_fLTYNw1qwTFZJiwWhdMCpIpMkCUDstiQFaNefstanaYg/exec';
+
+async function syncOrderToGoogleSheets(order) {
+    try {
+        const items = (order.items || []).map(item => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: item.finalPrice || item.price,
+            sweetness: item.options && item.options.sweetness ? item.options.sweetness + '%' : '100%',
+            toppings: item.options && item.options.toppings ? item.options.toppings.join(', ') : '',
+            notes: item.options && item.options.notes ? item.options.notes : ''
+        }));
+
+        const payload = {
+            action: 'addOrder',
+            orderNumber: order.id,
+            queueNumber: order.queue,
+            items: items,
+            total: order.total,
+            status: order.status,
+            timestamp: new Date().toISOString()
+        };
+
+        const response = await fetch(GAS_WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        console.log('Order synced to Google Sheets successfully');
+    } catch (err) {
+        console.error('Error syncing order to Google Sheets:', err);
+    }
+}
+
 export const store = {
     state: {
         cart: [],
@@ -177,6 +214,9 @@ export const store = {
                 console.error('Error saving order relationally to Supabase:', err);
             }
         }
+        
+        // Sync to Google Sheets (ส่งข้อมูลออเดอร์ไปบันทึกใน Google Sheets ด้วย)
+        syncOrderToGoogleSheets(newOrder);
         
         return newOrder;
     },
