@@ -271,39 +271,50 @@ const store = {
 
 let products = [];
 
+const DEFAULT_IMAGES = {
+    espresso: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&q=80&w=600',
+    latte: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=600',
+    tea: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600',
+    refresher: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600'
+};
+
 async function fetchProducts() {
     const defaultProducts = [
         {
             id: 'a1111111-1111-1111-1111-111111111111',
             name: 'นอร์ดิกโอ๊ตลาเต้',
+            category: 'กาแฟ',
             description: 'เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา',
             price: 4.50,
             tag: 'เพื่อความยั่งยืน',
-            image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=600'
+            image: DEFAULT_IMAGES.latte
         },
         {
             id: 'a2222222-2222-2222-2222-222222222222',
             name: 'ฟังก์ชันนัลเอสเพรสโซ่',
+            category: 'กาแฟ',
             description: 'เอสเพรสโซ่เข้มข้น 2 ช็อตจากเมล็ดคั่วเข้ม เพื่อพลังงานสูงสุดในการเริ่มต้นวันใหม่',
             price: 3.00,
             tag: 'ขายดี',
-            image: 'https://images.unsplash.com/photo-1510707577719-ee7c18304e3c?auto=format&fit=crop&q=80&w=600'
+            image: DEFAULT_IMAGES.espresso
         },
         {
             id: 'a3333333-3333-3333-3333-333333333333',
             name: 'แคลริตี้กรีนที (ชาเขียว)',
+            category: 'ชา',
             description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย และเบาสบายตลอดวัน',
             price: 3.50,
             tag: 'ออร์แกนิก',
-            image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&q=80&w=600'
+            image: DEFAULT_IMAGES.tea
         },
         {
             id: 'a4444444-4444-4444-4444-444444444444',
             name: 'ซิตรัสไฮเดรเตอร์',
+            category: 'สดชื่น',
             description: 'น้ำโซดาเย็นจัด ผสมเลมอนและส้มสกัดเย็น ให้ความสดชื่นทันทีที่ดื่ม',
             price: 4.00,
             tag: 'สดชื่น',
-            image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600'
+            image: DEFAULT_IMAGES.refresher
         }
     ];
 
@@ -314,10 +325,19 @@ async function fetchProducts() {
             console.error('Error fetching products from Supabase:', error);
             products = defaultProducts;
         } else {
-            const mapped = (data || []).map(p => ({
-                ...p,
-                price: Number(p.price)
-            }));
+            const mapped = (data || []).map((p, idx) => {
+                let fallbackImg = DEFAULT_IMAGES.latte;
+                if (p.name && p.name.includes('เอสเพรสโซ่')) fallbackImg = DEFAULT_IMAGES.espresso;
+                else if (p.name && (p.name.includes('ชา') || p.name.includes('ที'))) fallbackImg = DEFAULT_IMAGES.tea;
+                else if (p.name && (p.name.includes('ซิตรัส') || p.name.includes('โซดา'))) fallbackImg = DEFAULT_IMAGES.refresher;
+
+                return {
+                    ...p,
+                    category: p.category || (p.name.includes('ชา') ? 'ชา' : p.name.includes('โซดา') || p.name.includes('ซิตรัส') ? 'สดชื่น' : 'กาแฟ'),
+                    price: Number(p.price),
+                    image: (p.image && p.image.startsWith('http')) ? p.image : fallbackImg
+                };
+            });
             products = mapped.length > 0 ? mapped : defaultProducts;
         }
     } else {
@@ -435,23 +455,27 @@ function renderBottomNav() {
             <span class="material-symbols-outlined mb-1" ${isMenu ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>local_cafe</span>
             <span class="${isMenu ? 'font-bold' : ''}">Shop</span>
         </button>
-        <button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full transition-colors">
-            <span class="material-symbols-outlined mb-1">map</span>
-            <span>Track</span>
+        <button id="mob-kds" class="flex flex-col items-center justify-center ${currentRoute === 'kds' ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} transition-all">
+            <span class="material-symbols-outlined mb-1" ${currentRoute === 'kds' ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>receipt_long</span>
+            <span class="${currentRoute === 'kds' ? 'font-bold' : ''}">KDS</span>
         </button>
         <button id="mob-cart" class="flex flex-col items-center justify-center ${isCart ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} relative transition-all">
             <span class="material-symbols-outlined mb-1" ${isCart ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>shopping_cart</span>
             <span class="${isCart ? 'font-bold' : ''}">Cart</span>
             <span id="mob-cart-badge" class="absolute top-0 right-1 bg-error text-on-error text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center scale-0 transition-transform">0</span>
         </button>
-        <button id="mob-admin" class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full transition-colors">
+        <button id="mob-admin" class="flex flex-col items-center justify-center ${currentRoute === 'admin' ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} transition-all">
             <span class="material-symbols-outlined mb-1">admin_panel_settings</span>
-            <span>Admin</span>
+            <span class="${currentRoute === 'admin' ? 'font-bold' : ''}">Admin</span>
         </button>
     `;
 
     nav.querySelector('#mob-shop').addEventListener('click', () => {
         store.navigate('menu');
+    });
+
+    nav.querySelector('#mob-kds').addEventListener('click', () => {
+        store.navigate('kds');
     });
 
     nav.querySelector('#mob-cart').addEventListener('click', () => {
@@ -505,10 +529,11 @@ function renderNavbar() {
             </div>
             
             <!-- Center Navigation Links -->
-            <nav class="flex gap-lg items-center">
+            <nav class="flex gap-md lg:gap-lg items-center">
                 <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${isMenu ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-shop">หน้าหลัก</a>
-                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium" id="nav-admin">จัดการหลังบ้าน (Admin)</a>
-                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium" href="#">โปรโมชั่น</a>
+                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'pos' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-pos">จุดขาย (POS)</a>
+                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'kds' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-kds">หน้าจอครัว (KDS)</a>
+                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'admin' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-admin">จัดการหลังบ้าน (Admin)</a>
             </nav>
             
             <!-- Right Actions -->
@@ -534,6 +559,14 @@ function renderNavbar() {
 
     header.querySelector('#nav-shop').addEventListener('click', () => {
         store.navigate('menu');
+    });
+
+    header.querySelector('#nav-pos').addEventListener('click', () => {
+        store.navigate('pos');
+    });
+
+    header.querySelector('#nav-kds').addEventListener('click', () => {
+        store.navigate('kds');
     });
 
     header.querySelector('#nav-cart-btn').addEventListener('click', () => {
@@ -1225,6 +1258,9 @@ function renderMenu() {
     const container = document.createElement('div');
     container.className = 'px-gutter-mobile md:px-gutter-desktop max-w-container-max mx-auto mt-lg pb-xxl';
 
+    let activeCategory = 'ทั้งหมด';
+    let searchQuery = '';
+
     container.innerHTML = `
         <!-- Stunning Hero Section -->
         <div class="relative bg-gradient-to-r from-primary to-primary-hover text-on-primary rounded-2xl p-8 md:p-12 mb-xl overflow-hidden shadow-lg">
@@ -1246,12 +1282,12 @@ function renderMenu() {
                 <p class="font-body-sm text-body-sm text-text-secondary">เลือกเครื่องดื่มถ้วยโปรดของคุณ</p>
             </div>
             
-            <!-- Category Tabs with subtle scale-on-hover -->
-            <div class="flex overflow-x-auto gap-xs pb-2 scrollbar-hide">
-                <button class="category-btn flex-shrink-0 bg-primary text-on-primary font-label text-label px-5 py-2.5 rounded-full shadow-sm hover:scale-105 active:scale-95 transition-all">ทั้งหมด</button>
-                <button class="category-btn flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-5 py-2.5 rounded-full hover:bg-surface-variant hover:scale-105 active:scale-95 transition-all">กาแฟ</button>
-                <button class="category-btn flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-5 py-2.5 rounded-full hover:bg-surface-variant hover:scale-105 active:scale-95 transition-all">ชา</button>
-                <button class="category-btn flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-5 py-2.5 rounded-full hover:bg-surface-variant hover:scale-105 active:scale-95 transition-all">สดชื่น</button>
+            <!-- Category Tabs -->
+            <div class="flex overflow-x-auto gap-xs pb-2 scrollbar-hide" id="category-bar">
+                <button data-cat="ทั้งหมด" class="category-btn flex-shrink-0 bg-primary text-on-primary font-label text-label px-5 py-2.5 rounded-full shadow-sm hover:scale-105 active:scale-95 transition-all">ทั้งหมด</button>
+                <button data-cat="กาแฟ" class="category-btn flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-5 py-2.5 rounded-full hover:bg-surface-variant hover:scale-105 active:scale-95 transition-all">กาแฟ</button>
+                <button data-cat="ชา" class="category-btn flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-5 py-2.5 rounded-full hover:bg-surface-variant hover:scale-105 active:scale-95 transition-all">ชา</button>
+                <button data-cat="สดชื่น" class="category-btn flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-5 py-2.5 rounded-full hover:bg-surface-variant hover:scale-105 active:scale-95 transition-all">สดชื่น</button>
             </div>
         </div>
         
@@ -1262,50 +1298,87 @@ function renderMenu() {
 
     const grid = container.querySelector('#product-grid');
 
-    products.forEach(product => {
-        const article = document.createElement('article');
-        article.className = 'bg-surface border border-border/80 rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col group relative';
+    const renderGrid = () => {
+        grid.innerHTML = '';
         
-        const tagHtml = product.tag ? `
-            <span class="absolute top-md left-md bg-secondary-container text-on-surface font-caption text-caption font-bold px-3 py-1 rounded-full shadow-sm z-10 backdrop-blur-md">
-                ${product.tag}
-            </span>` : '';
-
-        article.innerHTML = `
-            <div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-variant">
-                ${tagHtml}
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="${product.name}" src="${product.image}"/>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            </div>
-            <div class="p-md flex flex-col flex-grow">
-                <h3 class="font-product-name text-product-name text-text-primary group-hover:text-primary transition-colors mb-1 line-clamp-1">${product.name}</h3>
-                <p class="font-body-sm text-body-sm text-text-secondary line-clamp-2 mb-4 flex-grow">${product.description}</p>
-                
-                <div class="flex justify-between items-center mt-auto pt-sm border-t border-border/50">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] text-outline uppercase tracking-wider">ราคาเริ่มต้น</span>
-                        <span class="font-price text-price text-text-primary">$${product.price.toFixed(2)}</span>
-                    </div>
-                    <button class="add-to-cart-btn h-[40px] px-4 bg-primary text-on-primary font-label text-label rounded-full flex items-center justify-center gap-xs hover:bg-primary-hover active:scale-95 transition-all shadow-sm">
-                        <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-                        สั่งซื้อ
-                    </button>
-                </div>
-            </div>
-        `;
-
-        article.querySelector('.add-to-cart-btn').addEventListener('click', () => {
-            const modal = renderProductModal(product, () => {
-                // Modal closed callback
-            });
-            document.body.appendChild(modal);
+        const filtered = products.filter(p => {
+            const matchCategory = (activeCategory === 'ทั้งหมด') || (p.category === activeCategory);
+            const matchSearch = !searchQuery || p.name.toLowerCase().includes(searchQuery.toLowerCase()) || (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()));
+            return matchCategory && matchSearch;
         });
 
-        grid.appendChild(article);
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-xl text-text-secondary">
+                    <span class="material-symbols-outlined text-[48px] mb-sm text-outline">search_off</span>
+                    <p class="font-h3 text-h3">ไม่พบรายการเครื่องดื่มที่คุณค้นหา</p>
+                </div>
+            `;
+            return;
+        }
+
+        filtered.forEach(product => {
+            const article = document.createElement('article');
+            article.className = 'bg-surface border border-border/80 rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col group relative cursor-pointer';
+            
+            const tagHtml = product.tag ? `
+                <span class="absolute top-md left-md bg-secondary-container text-on-surface font-caption text-caption font-bold px-3 py-1 rounded-full shadow-sm z-10 backdrop-blur-md">
+                    ${product.tag}
+                </span>` : '';
+
+            article.innerHTML = `
+                <div class="relative w-full aspect-[4/3] overflow-hidden bg-surface-variant">
+                    ${tagHtml}
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="${product.name}" src="${product.image}" onerror="this.src='https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=600'"/>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div class="p-md flex flex-col flex-grow">
+                    <h3 class="font-product-name text-product-name text-text-primary group-hover:text-primary transition-colors mb-1 line-clamp-1">${product.name}</h3>
+                    <p class="font-body-sm text-body-sm text-text-secondary line-clamp-2 mb-4 flex-grow">${product.description || ''}</p>
+                    
+                    <div class="flex justify-between items-center mt-auto pt-sm border-t border-border/50">
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-outline uppercase tracking-wider">ราคาเริ่มต้น</span>
+                            <span class="font-price text-price text-text-primary">$${product.price.toFixed(2)}</span>
+                        </div>
+                        <button class="add-to-cart-btn h-[40px] px-4 bg-primary text-on-primary font-label text-label rounded-full flex items-center justify-center gap-xs hover:bg-primary-hover active:scale-95 transition-all shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                            สั่งซื้อ
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Open modal on click (entire card or button)
+            article.addEventListener('click', () => {
+                const modal = renderProductModal(product, () => {});
+                document.body.appendChild(modal);
+            });
+
+            grid.appendChild(article);
+        });
+    };
+
+    // Category button click handling
+    container.querySelectorAll('.category-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            activeCategory = e.currentTarget.dataset.cat;
+            container.querySelectorAll('.category-btn').forEach(b => {
+                if (b.dataset.cat === activeCategory) {
+                    b.className = 'category-btn flex-shrink-0 bg-primary text-on-primary font-label text-label px-5 py-2.5 rounded-full shadow-sm hover:scale-105 active:scale-95 transition-all';
+                } else {
+                    b.className = 'category-btn flex-shrink-0 bg-surface text-text-secondary border border-border font-label text-label px-5 py-2.5 rounded-full hover:bg-surface-variant hover:scale-105 active:scale-95 transition-all';
+                }
+            });
+            renderGrid();
+        });
     });
+
+    renderGrid();
 
     return container;
 }
+
 
 
 /* --- js/views/POS.js --- */

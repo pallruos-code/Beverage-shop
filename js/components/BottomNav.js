@@ -14,23 +14,27 @@ export function renderBottomNav() {
             <span class="material-symbols-outlined mb-1" ${isMenu ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>local_cafe</span>
             <span class="${isMenu ? 'font-bold' : ''}">Shop</span>
         </button>
-        <button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full transition-colors">
-            <span class="material-symbols-outlined mb-1">map</span>
-            <span>Track</span>
+        <button id="mob-kds" class="flex flex-col items-center justify-center ${currentRoute === 'kds' ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} transition-all">
+            <span class="material-symbols-outlined mb-1" ${currentRoute === 'kds' ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>receipt_long</span>
+            <span class="${currentRoute === 'kds' ? 'font-bold' : ''}">KDS</span>
         </button>
         <button id="mob-cart" class="flex flex-col items-center justify-center ${isCart ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} relative transition-all">
             <span class="material-symbols-outlined mb-1" ${isCart ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>shopping_cart</span>
             <span class="${isCart ? 'font-bold' : ''}">Cart</span>
             <span id="mob-cart-badge" class="absolute top-0 right-1 bg-error text-on-error text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center scale-0 transition-transform">0</span>
         </button>
-        <button id="mob-admin" class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full transition-colors">
+        <button id="mob-admin" class="flex flex-col items-center justify-center ${currentRoute === 'admin' ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} transition-all">
             <span class="material-symbols-outlined mb-1">admin_panel_settings</span>
-            <span>Admin</span>
+            <span class="${currentRoute === 'admin' ? 'font-bold' : ''}">Admin</span>
         </button>
     `;
 
     nav.querySelector('#mob-shop').addEventListener('click', () => {
         store.navigate('menu');
+    });
+
+    nav.querySelector('#mob-kds').addEventListener('click', () => {
+        store.navigate('kds');
     });
 
     nav.querySelector('#mob-cart').addEventListener('click', () => {

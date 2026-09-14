@@ -23,10 +23,11 @@ export function renderNavbar() {
             </div>
             
             <!-- Center Navigation Links -->
-            <nav class="flex gap-lg items-center">
+            <nav class="flex gap-md lg:gap-lg items-center">
                 <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${isMenu ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-shop">หน้าหลัก</a>
-                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium" id="nav-admin">จัดการหลังบ้าน (Admin)</a>
-                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium" href="#">โปรโมชั่น</a>
+                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'pos' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-pos">จุดขาย (POS)</a>
+                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'kds' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-kds">หน้าจอครัว (KDS)</a>
+                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'admin' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-admin">จัดการหลังบ้าน (Admin)</a>
             </nav>
             
             <!-- Right Actions -->
@@ -52,6 +53,14 @@ export function renderNavbar() {
 
     header.querySelector('#nav-shop').addEventListener('click', () => {
         store.navigate('menu');
+    });
+
+    header.querySelector('#nav-pos').addEventListener('click', () => {
+        store.navigate('pos');
+    });
+
+    header.querySelector('#nav-kds').addEventListener('click', () => {
+        store.navigate('kds');
     });
 
     header.querySelector('#nav-cart-btn').addEventListener('click', () => {

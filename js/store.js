@@ -252,39 +252,50 @@ export const store = {
 
 export let products = [];
 
+const DEFAULT_IMAGES = {
+    espresso: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&q=80&w=600',
+    latte: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=600',
+    tea: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600',
+    refresher: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600'
+};
+
 export async function fetchProducts() {
     const defaultProducts = [
         {
             id: 'a1111111-1111-1111-1111-111111111111',
             name: 'นอร์ดิกโอ๊ตลาเต้',
+            category: 'กาแฟ',
             description: 'เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา',
             price: 4.50,
             tag: 'เพื่อความยั่งยืน',
-            image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=600'
+            image: DEFAULT_IMAGES.latte
         },
         {
             id: 'a2222222-2222-2222-2222-222222222222',
             name: 'ฟังก์ชันนัลเอสเพรสโซ่',
+            category: 'กาแฟ',
             description: 'เอสเพรสโซ่เข้มข้น 2 ช็อตจากเมล็ดคั่วเข้ม เพื่อพลังงานสูงสุดในการเริ่มต้นวันใหม่',
             price: 3.00,
             tag: 'ขายดี',
-            image: 'https://images.unsplash.com/photo-1510707577719-ee7c18304e3c?auto=format&fit=crop&q=80&w=600'
+            image: DEFAULT_IMAGES.espresso
         },
         {
             id: 'a3333333-3333-3333-3333-333333333333',
             name: 'แคลริตี้กรีนที (ชาเขียว)',
+            category: 'ชา',
             description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย และเบาสบายตลอดวัน',
             price: 3.50,
             tag: 'ออร์แกนิก',
-            image: 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&q=80&w=600'
+            image: DEFAULT_IMAGES.tea
         },
         {
             id: 'a4444444-4444-4444-4444-444444444444',
             name: 'ซิตรัสไฮเดรเตอร์',
+            category: 'สดชื่น',
             description: 'น้ำโซดาเย็นจัด ผสมเลมอนและส้มสกัดเย็น ให้ความสดชื่นทันทีที่ดื่ม',
             price: 4.00,
             tag: 'สดชื่น',
-            image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600'
+            image: DEFAULT_IMAGES.refresher
         }
     ];
 
@@ -295,10 +306,19 @@ export async function fetchProducts() {
             console.error('Error fetching products from Supabase:', error);
             products = defaultProducts;
         } else {
-            const mapped = (data || []).map(p => ({
-                ...p,
-                price: Number(p.price)
-            }));
+            const mapped = (data || []).map((p, idx) => {
+                let fallbackImg = DEFAULT_IMAGES.latte;
+                if (p.name && p.name.includes('เอสเพรสโซ่')) fallbackImg = DEFAULT_IMAGES.espresso;
+                else if (p.name && (p.name.includes('ชา') || p.name.includes('ที'))) fallbackImg = DEFAULT_IMAGES.tea;
+                else if (p.name && (p.name.includes('ซิตรัส') || p.name.includes('โซดา'))) fallbackImg = DEFAULT_IMAGES.refresher;
+
+                return {
+                    ...p,
+                    category: p.category || (p.name.includes('ชา') ? 'ชา' : p.name.includes('โซดา') || p.name.includes('ซิตรัส') ? 'สดชื่น' : 'กาแฟ'),
+                    price: Number(p.price),
+                    image: (p.image && p.image.startsWith('http')) ? p.image : fallbackImg
+                };
+            });
             products = mapped.length > 0 ? mapped : defaultProducts;
         }
     } else {
