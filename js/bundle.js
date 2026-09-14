@@ -312,91 +312,98 @@ const DEFAULT_IMAGES = {
     refresher: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600'
 };
 
-async function fetchProducts() {
-    const defaultProducts = [
-        {
-            id: 'p-cappuccino',
-            name: 'คาปูชิโน่',
-            category: 'กาแฟ',
-            description: 'เอสเพรสโซ่เข้มข้น ผสมนมนุ่มและฟองนมนุ่มฟูสไตล์อิตาเลียน',
-            price: 30,
-            icedPrice: 30,
-            tag: 'แนะนำ',
-            image: DEFAULT_IMAGES.cappuccino
-        },
-        {
-            id: 'p-latte',
-            name: 'ลาเต้',
-            category: 'กาแฟ',
-            description: 'เอสเพรสโซ่ผสมนมสดนุ่มละมุน หอมกลิ่นกาแฟสดแท้',
-            price: 30,
-            icedPrice: 35,
-            tag: 'ยอดฮิต',
-            image: DEFAULT_IMAGES.latte
-        },
-        {
-            id: 'p-americano',
-            name: 'อเมริกาโน่',
-            category: 'กาแฟ',
-            description: 'กาแฟดำเอสเพรสโซ่เจือจางด้วยน้ำร้อน/น้ำเย็น ได้รสชาติกาแฟแท้เต็มคำ',
-            price: 30,
-            icedPrice: 35,
-            tag: 'เข้มข้น',
-            image: DEFAULT_IMAGES.americano
-        },
-        {
-            id: 'a1111111-1111-1111-1111-111111111111',
-            name: 'นอร์ดิกโอ๊ตลาเต้',
-            category: 'กาแฟ',
-            description: 'เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา',
-            price: 45,
-            icedPrice: 45,
-            tag: 'เพื่อความยั่งยืน',
-            image: DEFAULT_IMAGES.latte
-        },
-        {
-            id: 'a3333333-3333-3333-3333-333333333333',
-            name: 'แคลริตี้กรีนที (ชาเขียว)',
-            category: 'ชา',
-            description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย',
-            price: 35,
-            icedPrice: 35,
-            tag: 'ออร์แกนิก',
-            image: DEFAULT_IMAGES.tea
-        },
-        {
-            id: 'a4444444-4444-4444-4444-444444444444',
-            name: 'ซิตรัสไฮเดรเตอร์',
-            category: 'สดชื่น',
-            description: 'น้ำโซดาเย็นจัด ผสมเลมอนและส้มสกัดเย็น ให้ความสดชื่นทันทีที่ดื่ม',
-            price: 40,
-            icedPrice: 40,
-            tag: 'สดชื่น',
-            image: DEFAULT_IMAGES.refresher
-        }
-    ];
+const defaultProducts = [
+    {
+        id: 'p-cappuccino',
+        name: 'คาปูชิโน่',
+        category: 'กาแฟ',
+        description: 'เอสเพรสโซ่เข้มข้น ผสมนมนุ่มและฟองนมนุ่มฟูสไตล์อิตาเลียน',
+        price: 30,
+        icedPrice: 30,
+        tag: 'แนะนำ',
+        image: DEFAULT_IMAGES.cappuccino
+    },
+    {
+        id: 'p-latte',
+        name: 'ลาเต้',
+        category: 'กาแฟ',
+        description: 'เอสเพรสโซ่ผสมนมสดนุ่มละมุน หอมกลิ่นกาแฟสดแท้',
+        price: 30,
+        icedPrice: 35,
+        tag: 'ยอดฮิต',
+        image: DEFAULT_IMAGES.latte
+    },
+    {
+        id: 'p-americano',
+        name: 'อเมริกาโน่',
+        category: 'กาแฟ',
+        description: 'กาแฟดำเอสเพรสโซ่เจือจางด้วยน้ำร้อน/น้ำเย็น ได้รสชาติกาแฟแท้เต็มคำ',
+        price: 30,
+        icedPrice: 35,
+        tag: 'เข้มข้น',
+        image: DEFAULT_IMAGES.americano
+    },
+    {
+        id: 'a1111111-1111-1111-1111-111111111111',
+        name: 'นอร์ดิกโอ๊ตลาเต้',
+        category: 'กาแฟ',
+        description: 'เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา',
+        price: 45,
+        icedPrice: 45,
+        tag: 'เพื่อความยั่งยืน',
+        image: DEFAULT_IMAGES.latte
+    },
+    {
+        id: 'a3333333-3333-3333-3333-333333333333',
+        name: 'แคลริตี้กรีนที (ชาเขียว)',
+        category: 'ชา',
+        description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย',
+        price: 35,
+        icedPrice: 35,
+        tag: 'ออร์แกนิก',
+        image: DEFAULT_IMAGES.tea
+    },
+    {
+        id: 'a4444444-4444-4444-4444-444444444444',
+        name: 'ซิตรัสไฮเดรเตอร์',
+        category: 'สดชื่น',
+        description: 'น้ำโซดาเย็นจัด ผสมเลมอนและส้มสกัดเย็น ให้ความสดชื่นทันทีที่ดื่ม',
+        price: 40,
+        icedPrice: 40,
+        tag: 'สดชื่น',
+        image: DEFAULT_IMAGES.refresher
+    }
+];
 
+let products = [...defaultProducts];
+
+async function fetchProducts() {
     const client = getClient();
     if (client) {
-        const { data, error } = await client.from('products').select('*');
-        if (error) {
-            console.error('Error fetching products from Supabase:', error);
-            products = defaultProducts;
-        } else {
-            const mapped = (data || []).map((p, idx) => {
-                let fallbackImg = DEFAULT_IMAGES.latte;
-                if (p.name && p.name.includes('เอสเพรสโซ่')) fallbackImg = DEFAULT_IMAGES.espresso;
-                else if (p.name && (p.name.includes('ชา') || p.name.includes('ที'))) fallbackImg = DEFAULT_IMAGES.tea;
-                else if (p.name && (p.name.includes('ซิตรัส') || p.name.includes('โซดา'))) fallbackImg = DEFAULT_IMAGES.refresher;
+        try {
+            const { data, error } = await client.from('products').select('*');
+            if (error) {
+                console.error('Error fetching products from Supabase:', error);
+                products = defaultProducts;
+            } else {
+                const mapped = (data || []).map((p, idx) => {
+                    let fallbackImg = DEFAULT_IMAGES.latte;
+                    if (p.name && p.name.includes('เอสเพรสโซ่')) fallbackImg = DEFAULT_IMAGES.espresso;
+                    else if (p.name && (p.name.includes('ชา') || p.name.includes('ที'))) fallbackImg = DEFAULT_IMAGES.tea;
+                    else if (p.name && (p.name.includes('ซิตรัส') || p.name.includes('โซดา'))) fallbackImg = DEFAULT_IMAGES.refresher;
 
-                return {
-                    ...p,
-                    category: p.category || (p.name.includes('ชา') ? 'ชา' : p.name.includes('โซดา') || p.name.includes('ซิตรัส') ? 'สดชื่น' : 'กาแฟ'),
-                    price: Number(p.price),
-                    image: (p.image && p.image.startsWith('http')) ? p.image : fallbackImg
-                };
-            });
-            products = mapped.length > 0 ? mapped : defaultProducts;
+                    return {
+                        ...p,
+                        category: p.category || (p.name.includes('ชา') ? 'ชา' : p.name.includes('โซดา') || p.name.includes('ซิตรัส') ? 'สดชื่น' : 'กาแฟ'),
+                        price: Number(p.price),
+                        image: (p.image && p.image.startsWith('http')) ? p.image : fallbackImg
+                    };
+                });
+                products = mapped.length > 0 ? mapped : defaultProducts;
+            }
+        } catch (e) {
+            console.error('Exception fetching products:', e);
+            products = defaultProducts;
         }
     } else {
         products = defaultProducts;
@@ -1387,6 +1394,11 @@ function renderMenu() {
             });
             renderGrid();
         });
+    });
+
+    // Subscribe to store updates so products load dynamically
+    const unsubscribe = store.subscribe(() => {
+        renderGrid();
     });
 
     renderGrid();

@@ -121,6 +121,11 @@ export function renderMenu() {
         });
     });
 
+    // Subscribe to store updates so products load dynamically
+    const unsubscribe = store.subscribe(() => {
+        renderGrid();
+    });
+
     renderGrid();
 
     return container;
