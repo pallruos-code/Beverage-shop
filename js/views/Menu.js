@@ -86,7 +86,7 @@ export function renderMenu() {
                     <div class="flex justify-between items-center mt-auto pt-sm border-t border-border/50">
                         <div class="flex flex-col">
                             <span class="text-[10px] text-outline uppercase tracking-wider">ราคาเริ่มต้น</span>
-                            <span class="font-price text-price text-text-primary">$${product.price.toFixed(2)}</span>
+                            <span class="font-price text-price text-text-primary">฿${product.price.toFixed(2)}</span>
                         </div>
                         <button class="add-to-cart-btn h-[40px] px-4 bg-primary text-on-primary font-label text-label rounded-full flex items-center justify-center gap-xs hover:bg-primary-hover active:scale-95 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>

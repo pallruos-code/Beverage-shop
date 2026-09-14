@@ -254,7 +254,9 @@ export let products = [];
 
 const DEFAULT_IMAGES = {
     espresso: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&q=80&w=600',
+    cappuccino: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&q=80&w=600',
     latte: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=600',
+    americano: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=600',
     tea: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600',
     refresher: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600'
 };
@@ -262,29 +264,52 @@ const DEFAULT_IMAGES = {
 export async function fetchProducts() {
     const defaultProducts = [
         {
+            id: 'p-cappuccino',
+            name: 'คาปูชิโน่',
+            category: 'กาแฟ',
+            description: 'เอสเพรสโซ่เข้มข้น ผสมนมนุ่มและฟองนมนุ่มฟูสไตล์อิตาเลียน',
+            price: 30,
+            icedPrice: 30,
+            tag: 'แนะนำ',
+            image: DEFAULT_IMAGES.cappuccino
+        },
+        {
+            id: 'p-latte',
+            name: 'ลาเต้',
+            category: 'กาแฟ',
+            description: 'เอสเพรสโซ่ผสมนมสดนุ่มละมุน หอมกลิ่นกาแฟสดแท้',
+            price: 30,
+            icedPrice: 35,
+            tag: 'ยอดฮิต',
+            image: DEFAULT_IMAGES.latte
+        },
+        {
+            id: 'p-americano',
+            name: 'อเมริกาโน่',
+            category: 'กาแฟ',
+            description: 'กาแฟดำเอสเพรสโซ่เจือจางด้วยน้ำร้อน/น้ำเย็น ได้รสชาติกาแฟแท้เต็มคำ',
+            price: 30,
+            icedPrice: 35,
+            tag: 'เข้มข้น',
+            image: DEFAULT_IMAGES.americano
+        },
+        {
             id: 'a1111111-1111-1111-1111-111111111111',
             name: 'นอร์ดิกโอ๊ตลาเต้',
             category: 'กาแฟ',
             description: 'เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา',
-            price: 4.50,
+            price: 45,
+            icedPrice: 45,
             tag: 'เพื่อความยั่งยืน',
             image: DEFAULT_IMAGES.latte
-        },
-        {
-            id: 'a2222222-2222-2222-2222-222222222222',
-            name: 'ฟังก์ชันนัลเอสเพรสโซ่',
-            category: 'กาแฟ',
-            description: 'เอสเพรสโซ่เข้มข้น 2 ช็อตจากเมล็ดคั่วเข้ม เพื่อพลังงานสูงสุดในการเริ่มต้นวันใหม่',
-            price: 3.00,
-            tag: 'ขายดี',
-            image: DEFAULT_IMAGES.espresso
         },
         {
             id: 'a3333333-3333-3333-3333-333333333333',
             name: 'แคลริตี้กรีนที (ชาเขียว)',
             category: 'ชา',
-            description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย และเบาสบายตลอดวัน',
-            price: 3.50,
+            description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย',
+            price: 35,
+            icedPrice: 35,
             tag: 'ออร์แกนิก',
             image: DEFAULT_IMAGES.tea
         },
@@ -293,7 +318,8 @@ export async function fetchProducts() {
             name: 'ซิตรัสไฮเดรเตอร์',
             category: 'สดชื่น',
             description: 'น้ำโซดาเย็นจัด ผสมเลมอนและส้มสกัดเย็น ให้ความสดชื่นทันทีที่ดื่ม',
-            price: 4.00,
+            price: 40,
+            icedPrice: 40,
             tag: 'สดชื่น',
             image: DEFAULT_IMAGES.refresher
         }

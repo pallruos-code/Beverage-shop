@@ -30,12 +30,13 @@ export function renderCart() {
                     <div>
                         <div class="flex justify-between items-start mb-xs">
                             <h3 class="font-product-name text-product-name text-text-primary">${item.name}</h3>
-                            <span class="font-price text-price text-text-primary whitespace-nowrap ml-md">$${((item.finalPrice || item.price) * item.quantity).toFixed(2)}</span>
+                            <span class="font-price text-price text-text-primary whitespace-nowrap ml-md">฿${((item.finalPrice || item.price) * item.quantity).toFixed(2)}</span>
                         </div>
                         ${item.options ? `
                             <div class="font-caption text-caption text-text-secondary mb-2">
+                                ${item.options.type ? `<div>ประเภท: ${item.options.type}</div>` : ''}
                                 <div>ความหวาน: ${item.options.sweetness}%</div>
-                                ${item.options.toppings.length > 0 ? `<div>ท็อปปิ้ง: ${item.options.toppings.join(', ')}</div>` : ''}
+                                ${item.options.toppings && item.options.toppings.length > 0 ? `<div>ท็อปปิ้ง: ${item.options.toppings.join(', ')}</div>` : ''}
                                 ${item.options.notes ? `<div class="italic">"${item.options.notes}"</div>` : ''}
                             </div>
                         ` : ''}
@@ -79,16 +80,16 @@ export function renderCart() {
                     <div class="flex flex-col gap-sm font-body text-body text-text-secondary mb-lg">
                         <div class="flex justify-between">
                             <span>ยอดรวมสินค้า</span>
-                            <span class="font-dimensions text-dimensions text-text-primary">$${total.toFixed(2)}</span>
+                            <span class="font-dimensions text-dimensions text-text-primary">฿${total.toFixed(2)}</span>
                         </div>
                         <div class="flex justify-between">
                             <span>ภาษีโดยประมาณ</span>
-                            <span class="font-dimensions text-dimensions text-text-primary">$0.00</span>
+                            <span class="font-dimensions text-dimensions text-text-primary">฿0.00</span>
                         </div>
                     </div>
                     <div class="flex justify-between items-center border-t border-border pt-md mb-lg">
                         <span class="font-h3 text-h3 text-text-primary">ยอดสุทธิ</span>
-                        <span class="font-price text-price text-text-primary">$${total.toFixed(2)}</span>
+                        <span class="font-price text-price text-text-primary">฿${total.toFixed(2)}</span>
                     </div>
                     <button id="checkout-btn" class="w-full h-[44px] bg-secondary-container text-on-secondary-container font-label text-label hover:bg-secondary-fixed hover:shadow-md transition-all flex items-center justify-center gap-xs active:scale-[0.98]">
                         ดำเนินการชำระเงิน

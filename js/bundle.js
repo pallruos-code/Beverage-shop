@@ -273,7 +273,9 @@ let products = [];
 
 const DEFAULT_IMAGES = {
     espresso: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&q=80&w=600',
+    cappuccino: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&q=80&w=600',
     latte: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&q=80&w=600',
+    americano: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=600',
     tea: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600',
     refresher: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600'
 };
@@ -281,29 +283,52 @@ const DEFAULT_IMAGES = {
 async function fetchProducts() {
     const defaultProducts = [
         {
+            id: 'p-cappuccino',
+            name: 'คาปูชิโน่',
+            category: 'กาแฟ',
+            description: 'เอสเพรสโซ่เข้มข้น ผสมนมนุ่มและฟองนมนุ่มฟูสไตล์อิตาเลียน',
+            price: 30,
+            icedPrice: 30,
+            tag: 'แนะนำ',
+            image: DEFAULT_IMAGES.cappuccino
+        },
+        {
+            id: 'p-latte',
+            name: 'ลาเต้',
+            category: 'กาแฟ',
+            description: 'เอสเพรสโซ่ผสมนมสดนุ่มละมุน หอมกลิ่นกาแฟสดแท้',
+            price: 30,
+            icedPrice: 35,
+            tag: 'ยอดฮิต',
+            image: DEFAULT_IMAGES.latte
+        },
+        {
+            id: 'p-americano',
+            name: 'อเมริกาโน่',
+            category: 'กาแฟ',
+            description: 'กาแฟดำเอสเพรสโซ่เจือจางด้วยน้ำร้อน/น้ำเย็น ได้รสชาติกาแฟแท้เต็มคำ',
+            price: 30,
+            icedPrice: 35,
+            tag: 'เข้มข้น',
+            image: DEFAULT_IMAGES.americano
+        },
+        {
             id: 'a1111111-1111-1111-1111-111111111111',
             name: 'นอร์ดิกโอ๊ตลาเต้',
             category: 'กาแฟ',
             description: 'เอสเพรสโซ่รสชาติกลมกล่อม ผสมผสานกับนมโอ๊ตสูตรพิเศษของเรา',
-            price: 4.50,
+            price: 45,
+            icedPrice: 45,
             tag: 'เพื่อความยั่งยืน',
             image: DEFAULT_IMAGES.latte
-        },
-        {
-            id: 'a2222222-2222-2222-2222-222222222222',
-            name: 'ฟังก์ชันนัลเอสเพรสโซ่',
-            category: 'กาแฟ',
-            description: 'เอสเพรสโซ่เข้มข้น 2 ช็อตจากเมล็ดคั่วเข้ม เพื่อพลังงานสูงสุดในการเริ่มต้นวันใหม่',
-            price: 3.00,
-            tag: 'ขายดี',
-            image: DEFAULT_IMAGES.espresso
         },
         {
             id: 'a3333333-3333-3333-3333-333333333333',
             name: 'แคลริตี้กรีนที (ชาเขียว)',
             category: 'ชา',
-            description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย และเบาสบายตลอดวัน',
-            price: 3.50,
+            description: 'ใบชาเซนฉะชั้นดีจากญี่ปุ่น ให้ความรู้สึกสดชื่น ผ่อนคลาย',
+            price: 35,
+            icedPrice: 35,
             tag: 'ออร์แกนิก',
             image: DEFAULT_IMAGES.tea
         },
@@ -312,7 +337,8 @@ async function fetchProducts() {
             name: 'ซิตรัสไฮเดรเตอร์',
             category: 'สดชื่น',
             description: 'น้ำโซดาเย็นจัด ผสมเลมอนและส้มสกัดเย็น ให้ความสดชื่นทันทีที่ดื่ม',
-            price: 4.00,
+            price: 40,
+            icedPrice: 40,
             tag: 'สดชื่น',
             image: DEFAULT_IMAGES.refresher
         }
@@ -828,12 +854,13 @@ function renderCart() {
                     <div>
                         <div class="flex justify-between items-start mb-xs">
                             <h3 class="font-product-name text-product-name text-text-primary">${item.name}</h3>
-                            <span class="font-price text-price text-text-primary whitespace-nowrap ml-md">$${((item.finalPrice || item.price) * item.quantity).toFixed(2)}</span>
+                            <span class="font-price text-price text-text-primary whitespace-nowrap ml-md">฿${((item.finalPrice || item.price) * item.quantity).toFixed(2)}</span>
                         </div>
                         ${item.options ? `
                             <div class="font-caption text-caption text-text-secondary mb-2">
+                                ${item.options.type ? `<div>ประเภท: ${item.options.type}</div>` : ''}
                                 <div>ความหวาน: ${item.options.sweetness}%</div>
-                                ${item.options.toppings.length > 0 ? `<div>ท็อปปิ้ง: ${item.options.toppings.join(', ')}</div>` : ''}
+                                ${item.options.toppings && item.options.toppings.length > 0 ? `<div>ท็อปปิ้ง: ${item.options.toppings.join(', ')}</div>` : ''}
                                 ${item.options.notes ? `<div class="italic">"${item.options.notes}"</div>` : ''}
                             </div>
                         ` : ''}
@@ -877,16 +904,16 @@ function renderCart() {
                     <div class="flex flex-col gap-sm font-body text-body text-text-secondary mb-lg">
                         <div class="flex justify-between">
                             <span>ยอดรวมสินค้า</span>
-                            <span class="font-dimensions text-dimensions text-text-primary">$${total.toFixed(2)}</span>
+                            <span class="font-dimensions text-dimensions text-text-primary">฿${total.toFixed(2)}</span>
                         </div>
                         <div class="flex justify-between">
                             <span>ภาษีโดยประมาณ</span>
-                            <span class="font-dimensions text-dimensions text-text-primary">$0.00</span>
+                            <span class="font-dimensions text-dimensions text-text-primary">฿0.00</span>
                         </div>
                     </div>
                     <div class="flex justify-between items-center border-t border-border pt-md mb-lg">
                         <span class="font-h3 text-h3 text-text-primary">ยอดสุทธิ</span>
-                        <span class="font-price text-price text-text-primary">$${total.toFixed(2)}</span>
+                        <span class="font-price text-price text-text-primary">฿${total.toFixed(2)}</span>
                     </div>
                     <button id="checkout-btn" class="w-full h-[44px] bg-secondary-container text-on-secondary-container font-label text-label hover:bg-secondary-fixed hover:shadow-md transition-all flex items-center justify-center gap-xs active:scale-[0.98]">
                         ดำเนินการชำระเงิน
@@ -1339,7 +1366,7 @@ function renderMenu() {
                     <div class="flex justify-between items-center mt-auto pt-sm border-t border-border/50">
                         <div class="flex flex-col">
                             <span class="text-[10px] text-outline uppercase tracking-wider">ราคาเริ่มต้น</span>
-                            <span class="font-price text-price text-text-primary">$${product.price.toFixed(2)}</span>
+                            <span class="font-price text-price text-text-primary">฿${product.price.toFixed(2)}</span>
                         </div>
                         <button class="add-to-cart-btn h-[40px] px-4 bg-primary text-on-primary font-label text-label rounded-full flex items-center justify-center gap-xs hover:bg-primary-hover active:scale-95 transition-all shadow-sm">
                             <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
@@ -1549,6 +1576,9 @@ function renderProductModal(product, onClose) {
     const modalContent = document.createElement('div');
     modalContent.className = 'bg-surface w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl shadow-2xl flex flex-col md:flex-row';
 
+    const hotPrice = product.price || 30;
+    const icedPrice = product.icedPrice !== undefined ? product.icedPrice : (product.price + 5);
+
     modalContent.innerHTML = `
         <div class="md:w-1/2 p-4 md:p-6 bg-surface-container-low flex flex-col items-center justify-center relative">
             <button class="absolute top-4 right-4 md:hidden bg-surface-variant p-2 rounded-full text-on-surface hover:bg-outline-variant transition" id="close-modal-mobile">
@@ -1556,7 +1586,7 @@ function renderProductModal(product, onClose) {
             </button>
             <img src="${product.image}" alt="${product.name}" class="w-full h-auto aspect-square object-cover rounded-lg shadow-sm" />
             <h2 class="font-h2 text-h2 text-text-primary mt-4 text-center">${product.name}</h2>
-            <p class="font-price text-price text-primary text-center mt-2">$${product.price.toFixed(2)}</p>
+            <p class="font-price text-price text-primary text-center mt-2">฿${hotPrice}${hotPrice !== icedPrice ? ` - ฿${icedPrice}` : ''}</p>
         </div>
         
         <div class="md:w-1/2 p-4 md:p-6 flex flex-col gap-6 relative">
@@ -1565,14 +1595,35 @@ function renderProductModal(product, onClose) {
             </button>
             
             <form id="customization-form" class="flex flex-col gap-6">
+                <!-- Temperature / Type Selection (Hot / Iced) -->
+                <div class="flex flex-col gap-2">
+                    <h3 class="font-label text-label text-text-primary">ประเภทเครื่องดื่ม <span class="text-error">*</span></h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="type" value="ร้อน" checked class="peer sr-only" data-price="${hotPrice}" />
+                            <div class="h-11 flex items-center justify-center border border-border rounded-lg text-body-sm peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all hover:bg-surface-container gap-1 font-medium">
+                                <span class="material-symbols-outlined text-[18px]">local_fire_department</span>
+                                ร้อน (฿${hotPrice})
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="type" value="เย็น" class="peer sr-only" data-price="${icedPrice}" />
+                            <div class="h-11 flex items-center justify-center border border-border rounded-lg text-body-sm peer-checked:bg-primary peer-checked:text-on-primary peer-checked:border-primary transition-all hover:bg-surface-container gap-1 font-medium">
+                                <span class="material-symbols-outlined text-[18px]">ac_unit</span>
+                                เย็น (฿${icedPrice})
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- Sweetness Level -->
                 <div class="flex flex-col gap-2">
-                    <h3 class="font-label text-label text-text-primary">ระดับความหวาน (Sweetness) <span class="text-error">*</span></h3>
-                    <div class="grid grid-cols-5 gap-2">
+                    <h3 class="font-label text-label text-text-primary">ระดับความหวาน <span class="text-error">*</span></h3>
+                    <div class="grid grid-cols-5 gap-1.5">
                         ${[0, 25, 50, 75, 100].map(level => `
                             <label class="cursor-pointer">
                                 <input type="radio" name="sweetness" value="${level}" ${level === 100 ? 'checked' : ''} class="peer sr-only" />
-                                <div class="h-10 flex items-center justify-center border border-border rounded text-body-sm peer-checked:bg-primary-fixed peer-checked:text-on-primary-fixed peer-checked:border-primary transition-colors hover:bg-surface-container">
+                                <div class="h-10 flex items-center justify-center border border-border rounded-md text-caption peer-checked:bg-secondary-container peer-checked:text-on-secondary-container peer-checked:border-secondary transition-colors hover:bg-surface-container font-medium">
                                     ${level}%
                                 </div>
                             </label>
@@ -1582,10 +1633,10 @@ function renderProductModal(product, onClose) {
 
                 <!-- Toppings -->
                 <div class="flex flex-col gap-2">
-                    <h3 class="font-label text-label text-text-primary">ท็อปปิ้ง (Toppings) <span class="font-caption text-caption text-text-secondary">(+$0.30)</span></h3>
-                    <div class="flex flex-col gap-2 border border-border p-2 rounded bg-surface-container-low">
-                        ${['Oat Flakes', 'Honey Drop', 'Caramel Drizzle'].map((topping, idx) => `
-                            <label class="flex items-center justify-between p-2 hover:bg-surface rounded cursor-pointer">
+                    <h3 class="font-label text-label text-text-primary">ท็อปปิ้ง <span class="font-caption text-caption text-text-secondary">(+฿10)</span></h3>
+                    <div class="flex flex-col gap-2 border border-border p-2.5 rounded-lg bg-surface-container-low">
+                        ${['วิปครีม', 'บุกไข่มุก', 'ซอสคาราเมล'].map((topping, idx) => `
+                            <label class="flex items-center justify-between p-2 hover:bg-surface rounded-md cursor-pointer">
                                 <span class="font-body-sm text-body-sm">${topping}</span>
                                 <input type="checkbox" name="toppings" value="${topping}" class="w-5 h-5 rounded border-outline text-primary focus:ring-primary" />
                             </label>
@@ -1597,23 +1648,23 @@ function renderProductModal(product, onClose) {
                 <!-- Notes -->
                 <div class="flex flex-col gap-2">
                     <label class="font-label text-label text-text-primary" for="notes">รายละเอียดเพิ่มเติม</label>
-                    <textarea id="notes" name="notes" rows="2" class="w-full border border-border rounded p-2 text-body-sm resize-none focus:ring-1 focus:ring-primary outline-none" placeholder="เช่น หวานน้อย, ไม่ใส่น้ำแข็ง..."></textarea>
+                    <textarea id="notes" name="notes" rows="2" class="w-full border border-border rounded-lg p-2.5 text-body-sm resize-none focus:ring-1 focus:ring-primary outline-none" placeholder="เช่น หวานน้อย, แยกน้ำแข็ง..."></textarea>
                 </div>
 
                 <!-- Quantity & Submit -->
                 <div class="mt-auto border-t border-border pt-4 flex flex-col gap-4">
                     <div class="flex justify-between items-center">
-                        <span class="font-body-sm">จำนวน</span>
-                        <div class="flex items-center border border-border rounded h-10 w-32">
+                        <span class="font-body-sm font-medium">จำนวน</span>
+                        <div class="flex items-center border border-border rounded-lg h-10 w-32 overflow-hidden">
                             <button type="button" id="qty-dec" class="w-1/3 h-full hover:bg-surface-container text-primary font-bold">-</button>
                             <input type="number" id="qty-val" value="1" min="1" class="w-1/3 h-full text-center border-none p-0 focus:ring-0 text-dimensions bg-transparent" readonly />
                             <button type="button" id="qty-inc" class="w-1/3 h-full hover:bg-surface-container text-primary font-bold">+</button>
                         </div>
                     </div>
                     
-                    <button type="submit" class="w-full h-12 bg-secondary-container text-on-secondary-container font-label text-label rounded-lg hover:bg-secondary-fixed transition-colors flex items-center justify-center gap-2">
+                    <button type="submit" class="w-full h-12 bg-secondary-container text-on-secondary-container font-label text-label rounded-xl hover:bg-secondary-fixed transition-colors flex items-center justify-center gap-2 font-bold text-base shadow-sm">
                         <span class="material-symbols-outlined">shopping_basket</span>
-                        เพิ่มลงตะกร้า - $<span id="total-price">${product.price.toFixed(2)}</span>
+                        เพิ่มลงตะกร้า - ฿<span id="total-price">${hotPrice}</span>
                     </button>
                 </div>
             </form>
@@ -1640,11 +1691,12 @@ function renderProductModal(product, onClose) {
 
     const updatePrice = () => {
         const formData = new FormData(form);
+        const selectedType = form.querySelector('input[name="type"]:checked');
+        const typePrice = selectedType ? parseFloat(selectedType.dataset.price) : hotPrice;
         const toppings = formData.getAll('toppings');
         const qty = parseInt(qtyInput.value);
-        const basePrice = product.price;
-        const toppingsPrice = toppings.length * 0.30;
-        const total = (basePrice + toppingsPrice) * qty;
+        const toppingsPrice = toppings.length * 10;
+        const total = (typePrice + toppingsPrice) * qty;
         priceDisplay.textContent = total.toFixed(2);
     };
 
@@ -1661,20 +1713,31 @@ function renderProductModal(product, onClose) {
     });
 
     form.addEventListener('change', updatePrice);
+    updatePrice();
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(form);
+        const selectedType = form.querySelector('input[name="type"]:checked');
+        const typeVal = selectedType ? selectedType.value : 'ร้อน';
+        const typePrice = selectedType ? parseFloat(selectedType.dataset.price) : hotPrice;
+
         const options = {
+            type: typeVal,
             sweetness: formData.get('sweetness'),
             toppings: formData.getAll('toppings'),
             notes: formData.get('notes')
         };
         const qty = parseInt(qtyInput.value);
         
-        // Add to cart N times
+        const customizedProduct = {
+            ...product,
+            name: `${product.name} (${typeVal})`,
+            price: typePrice
+        };
+
         for (let i = 0; i < qty; i++) {
-            store.addToCart(product, options);
+            store.addToCart(customizedProduct, options);
         }
         
         onClose();
@@ -1683,6 +1746,7 @@ function renderProductModal(product, onClose) {
 
     return overlay;
 }
+
 
 
 /* --- js/app.js --- */
