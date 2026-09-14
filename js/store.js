@@ -282,8 +282,6 @@ export const store = {
     }
 };
 
-export let products = [];
-
 const DEFAULT_IMAGES = {
     espresso: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&q=80&w=600',
     cappuccino: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&q=80&w=600',
