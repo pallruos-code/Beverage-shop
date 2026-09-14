@@ -2,128 +2,96 @@ import { store } from '../store.js';
 
 export function renderLogin() {
     const container = document.createElement('div');
-    container.className = 'w-full min-h-screen bg-surface flex items-center justify-center font-body text-body text-text-primary antialiased pb-[80px] md:pb-0';
+    container.className = 'w-full min-h-screen bg-surface flex items-center justify-center font-body text-body text-text-primary antialiased p-4';
+
+    const targetName = store.state.pendingRoute ? store.state.pendingRoute.toUpperCase() : 'หลังร้าน';
 
     container.innerHTML = `
-        <div class="w-full max-w-[400px] px-gutter-desktop mx-auto flex flex-col items-center">
+        <div class="w-full max-w-[420px] mx-auto flex flex-col items-center">
             <!-- Brand Logo Area -->
-            <div class="mb-xxl w-full flex justify-center cursor-pointer" id="login-brand">
-                <div class="w-[120px] h-[120px] bg-primary rounded-full flex items-center justify-center shadow-lg group hover:scale-105 transition-transform">
-                    <span class="font-h1 text-h1 text-on-primary">F</span>
+            <div class="mb-lg w-full flex flex-col items-center cursor-pointer" id="login-brand">
+                <div class="w-20 h-20 bg-primary rounded-full flex items-center justify-center shadow-lg mb-sm hover:scale-105 transition-transform">
+                    <span class="material-symbols-outlined text-[40px] text-on-primary">admin_panel_settings</span>
                 </div>
+                <h2 class="font-h2 text-h2 text-text-primary">ร้านแม่วะคาเฟ่</h2>
+                <p class="font-caption text-caption text-text-secondary">ระบบจัดการหลังร้าน (Staff & Admin Only)</p>
             </div>
 
-            <!-- Login Form -->
-            <div class="w-full bg-surface-container-lowest p-lg rounded-xl border border-border shadow-[0_1px_3px_rgba(17,17,17,0.06)]">
-                <h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-center text-text-primary mb-xl tracking-tight">เข้าสู่ระบบ</h1>
+            <!-- Login Form Card -->
+            <div class="w-full bg-surface-container-lowest p-6 md:p-8 rounded-2xl border border-border shadow-xl">
+                <div class="text-center mb-6">
+                    <h1 class="font-h2 text-h2 text-text-primary mb-1">ยืนยันรหัสเข้าใช้งาน</h1>
+                    <p class="font-body-sm text-body-sm text-text-secondary">กรุณากรอกรหัสผ่านพนักงานเพื่อเข้าสู่หน้า ${targetName}</p>
+                </div>
                 
-                <form class="flex flex-col gap-lg" id="login-form">
-                    <!-- Email Field -->
-                    <div class="flex flex-col gap-xs relative">
-                        <label class="font-label text-label text-text-primary" for="email">อีเมล</label>
-                        <div class="relative w-full">
-                            <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline z-10 pointer-events-none">mail</span>
-                            <input class="w-full h-[44px] pl-xl pr-sm bg-surface border border-border rounded-DEFAULT focus:border-primary focus:ring-1 focus:ring-primary font-body-sm text-body-sm text-text-primary placeholder:text-outline transition-colors outline-none" id="email" placeholder="example@email.com" required="" type="email" />
-                        </div>
+                <form class="flex flex-col gap-5" id="passcode-form">
+                    <!-- Error Alert -->
+                    <div id="error-alert" class="hidden bg-error-container text-on-error-container p-3 rounded-lg text-caption flex items-center gap-2 border border-error/20">
+                        <span class="material-symbols-outlined text-[18px]">error</span>
+                        <span id="error-msg">รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</span>
                     </div>
-                    
-                    <!-- Password Field -->
-                    <div class="flex flex-col gap-xs relative">
-                        <div class="flex justify-between items-center">
-                            <label class="font-label text-label text-text-primary" for="password">รหัสผ่าน</label>
-                            <a class="font-caption text-caption text-primary hover:text-primary-hover hover:underline transition-colors" href="#">ลืมรหัสผ่าน?</a>
-                        </div>
+
+                    <!-- Passcode Field -->
+                    <div class="flex flex-col gap-1.5 relative">
+                        <label class="font-label text-label text-text-primary" for="passcode">รหัสผ่านพนักงาน / เจ้าของร้าน</label>
                         <div class="relative w-full">
-                            <span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline z-10 pointer-events-none">lock</span>
-                            <input class="w-full h-[44px] px-xl bg-surface border border-border rounded-DEFAULT focus:border-primary focus:ring-1 focus:ring-primary font-body-sm text-body-sm text-text-primary placeholder:text-outline transition-colors outline-none" id="password" placeholder="••••••••" required="" type="password" />
-                            <button class="absolute right-sm top-1/2 -translate-y-1/2 text-outline hover:text-text-primary transition-colors focus:outline-none" tabindex="-1" type="button" id="toggle-password">
-                                <span class="material-symbols-outlined" style="font-size: 20px;">visibility_off</span>
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline z-10 pointer-events-none">lock</span>
+                            <input class="w-full h-12 pl-10 pr-10 bg-surface border border-border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 font-dimensions text-body tracking-wider text-text-primary placeholder:text-outline transition-all outline-none" id="passcode" placeholder="กรอกรหัสผ่าน 11 หลัก..." required type="password" autocomplete="off" autofocus />
+                            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-text-primary transition-colors focus:outline-none" tabindex="-1" type="button" id="toggle-passcode">
+                                <span class="material-symbols-outlined text-[20px]">visibility_off</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Remember Me -->
-                    <div class="flex items-center gap-sm">
-                        <label class="relative flex items-center cursor-pointer p-1 rounded-full hover:bg-surface-container-low transition-colors" for="remember">
-                            <input class="peer relative h-5 w-5 cursor-pointer appearance-none rounded-sm border border-outline transition-all checked:border-primary checked:bg-primary" id="remember" type="checkbox" />
-                            <span class="absolute text-white transition-opacity opacity-0 pointer-events-none top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 peer-checked:opacity-100">
-                                <span class="material-symbols-outlined" style="font-size: 16px;">check</span>
-                            </span>
-                        </label>
-                        <label class="font-body-sm text-body-sm text-text-primary cursor-pointer select-none" for="remember">จำฉันไว้ในระบบ</label>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col gap-md mt-sm">
-                        <button class="w-full h-[44px] bg-primary text-on-primary font-label text-label rounded-DEFAULT hover:bg-primary-hover transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-sm" type="submit">
-                            เข้าสู่ระบบ
-                            <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+                    <!-- Submit Button -->
+                    <div class="flex flex-col gap-3 mt-2">
+                        <button class="w-full h-12 bg-primary text-on-primary font-label text-label rounded-xl hover:bg-primary-hover active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 font-bold" type="submit">
+                            <span>เข้าสู่ระบบหลังร้าน</span>
+                            <span class="material-symbols-outlined text-[20px]">key</span>
                         </button>
                         
-                        <div class="relative flex items-center py-sm">
-                            <div class="flex-grow border-t border-border"></div>
-                            <span class="flex-shrink-0 mx-md font-caption text-caption text-text-secondary uppercase tracking-wider">หรือ</span>
-                            <div class="flex-grow border-t border-border"></div>
-                        </div>
-
-                        <button class="w-full h-[44px] bg-surface text-text-primary border border-border font-label text-label rounded-DEFAULT hover:bg-surface-container-low transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-sm" type="button">
-                            เข้าสู่ระบบด้วย Google
+                        <button id="back-to-menu-btn" class="w-full h-11 bg-surface text-text-secondary border border-border font-label text-label rounded-xl hover:bg-surface-container transition-all flex items-center justify-center gap-2" type="button">
+                            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                            กลับไปหน้าร้าน (สำหรับลูกค้า)
                         </button>
                     </div>
                 </form>
-
-                <p class="mt-lg text-center font-body-sm text-body-sm text-text-secondary">
-                    ยังไม่มีบัญชี? 
-                    <a class="font-label text-label text-primary hover:text-primary-hover hover:underline transition-colors" href="#">สมัครสมาชิก</a>
-                </p>
             </div>
             
-            <div class="mt-xl font-caption text-caption text-outline text-center flex flex-col gap-xs">
-                <p>2023 © FikaSmart.</p>
-                <div class="flex gap-md justify-center">
-                    <a class="hover:text-text-primary transition-colors" href="#">Terms</a>
-                    <a class="hover:text-text-primary transition-colors" href="#">Privacy</a>
-                </div>
+            <div class="mt-8 font-caption text-caption text-outline text-center flex flex-col gap-1">
+                <p>🔒 ระบบการเชื่อมต่อปลอดภัย ร้านแม่วะคาเฟ่</p>
             </div>
         </div>
     `;
 
-    // Functionality
-    const loginForm = container.querySelector('#login-form');
-    loginForm.addEventListener('submit', async (e) => {
+    // Form logic
+    const form = container.querySelector('#passcode-form');
+    const passcodeInput = container.querySelector('#passcode');
+    const errorAlert = container.querySelector('#error-alert');
+    const errorMsg = container.querySelector('#error-msg');
+    const toggleBtn = container.querySelector('#toggle-passcode');
+
+    toggleBtn.addEventListener('click', () => {
+        const type = passcodeInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passcodeInput.setAttribute('type', type);
+        toggleBtn.innerHTML = `<span class="material-symbols-outlined text-[20px]">${type === 'password' ? 'visibility_off' : 'visibility'}</span>`;
+    });
+
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const email = loginForm.querySelector('#email').value;
-        const password = loginForm.querySelector('#password').value;
-        const submitBtn = loginForm.querySelector('button[type="submit"]');
+        const code = passcodeInput.value.trim();
         
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = 'กำลังตรวจสอบ...';
-        
-        if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
-            
-            if (error) {
-                alert('เกิดข้อผิดพลาด: ' + error.message);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'เข้าสู่ระบบ <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>';
-            } else {
-                store.navigate('admin');
-            }
-        } else {
-            // Fallback for offline/no supabase configuration
-            store.navigate('admin');
+        const success = store.verifyPasscode(code);
+        if (!success) {
+            errorMsg.textContent = 'รหัสผ่านพนักงานไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';
+            errorAlert.classList.remove('hidden');
+            passcodeInput.value = '';
+            passcodeInput.focus();
         }
     });
 
-    const togglePasswordBtn = container.querySelector('#toggle-password');
-    const passwordInput = container.querySelector('#password');
-    togglePasswordBtn.addEventListener('click', () => {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-        togglePasswordBtn.innerHTML = `<span class="material-symbols-outlined" style="font-size: 20px;">${type === 'password' ? 'visibility_off' : 'visibility'}</span>`;
+    container.querySelector('#back-to-menu-btn').addEventListener('click', () => {
+        store.navigate('menu');
     });
 
     container.querySelector('#login-brand').addEventListener('click', () => {
@@ -132,3 +100,4 @@ export function renderLogin() {
 
     return container;
 }
+

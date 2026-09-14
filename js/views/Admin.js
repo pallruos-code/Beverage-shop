@@ -62,8 +62,9 @@ export function renderAdmin() {
             <header class="h-[80px] bg-surface border-b border-border flex items-center justify-between px-xl shrink-0 z-10 shadow-sm">
                 <h1 class="font-h1 text-h1 text-primary">ภาพรวมระบบ</h1>
                 <div class="flex items-center gap-md">
-                    <button class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-on-surface transition-colors border border-border">
-                        <span class="material-symbols-outlined">notifications</span>
+                    <button id="admin-logout-btn" class="h-[44px] px-md bg-error/10 hover:bg-error/20 text-error font-label text-label rounded-DEFAULT flex items-center gap-xs transition-colors border border-error/20" title="ออกจากระบบหลังร้าน">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">lock</span>
+                        ล็อคระบบ
                     </button>
                     <button id="go-to-shop" class="h-[44px] px-lg bg-primary hover:bg-primary-hover text-on-primary font-label text-label rounded-DEFAULT flex items-center gap-xs transition-colors">
                         <span class="material-symbols-outlined" style="font-size: 20px;">storefront</span>
@@ -173,6 +174,10 @@ export function renderAdmin() {
 
     container.querySelector('#admin-brand').addEventListener('click', () => {
         store.navigate('menu');
+    });
+
+    container.querySelector('#admin-logout-btn').addEventListener('click', () => {
+        store.logoutStaff();
     });
 
     container.querySelector('#go-to-shop').addEventListener('click', () => {

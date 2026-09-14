@@ -42,7 +42,9 @@ export const store = {
     state: {
         cart: [],
         orders: [], // For KDS
-        currentRoute: 'menu' // 'menu', 'cart', 'admin', 'pos', 'kds', 'login'
+        currentRoute: 'menu', // 'menu', 'cart', 'admin', 'pos', 'kds', 'login'
+        isAuthenticated: localStorage.getItem('staff_auth') === 'true',
+        pendingRoute: null
     },
     listeners: [],
     
@@ -55,6 +57,36 @@ export const store = {
     
     notify() {
         this.listeners.forEach(listener => listener(this.state));
+    },
+    
+    verifyPasscode(passcode) {
+        const STAFF_PASSCODE = '11333355555';
+        if (passcode === STAFF_PASSCODE) {
+            this.state.isAuthenticated = true;
+            localStorage.setItem('staff_auth', 'true');
+            const target = this.state.pendingRoute || 'admin';
+            this.state.pendingRoute = null;
+            this.navigate(target);
+            return true;
+        }
+        return false;
+    },
+
+    logoutStaff() {
+        this.state.isAuthenticated = false;
+        localStorage.removeItem('staff_auth');
+        this.navigate('menu');
+    },
+
+    navigate(route) {
+        const protectedRoutes = ['admin', 'pos', 'kds'];
+        if (protectedRoutes.includes(route) && !this.state.isAuthenticated) {
+            this.state.pendingRoute = route;
+            this.state.currentRoute = 'login';
+        } else {
+            this.state.currentRoute = route;
+        }
+        this.notify();
     },
     
     addToCart(product, options = null) {
