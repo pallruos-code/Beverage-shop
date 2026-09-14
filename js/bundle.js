@@ -1806,12 +1806,28 @@ class App {
             container.appendChild(renderBottomNav());
         }
         
-        this.root.appendChild(container);
+        try {
+            this.root.appendChild(container);
+        } catch (err) {
+            console.error('App render error:', err);
+            this.root.innerHTML = `<div class="p-8 text-center"><h1 class="text-xl font-bold">ร้านแม่วะคาเฟ่</h1><p class="mt-2 text-gray-600">กรุณารีเฟรชหน้าใหม่อีกครั้ง</p></div>`;
+        }
     }
 }
 
-// Initialize App
-document.addEventListener('DOMContentLoaded', () => {
-    new App();
-});
+// Safe Initialize App (handles DOMContentLoaded race condition on mobile)
+function startApp() {
+    try {
+        new App();
+    } catch (e) {
+        console.error('Failed to start App:', e);
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+} else {
+    startApp();
+}
+
 
