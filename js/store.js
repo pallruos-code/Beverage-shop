@@ -362,12 +362,19 @@ export async function fetchProducts() {
     const client = getClient();
     if (client) {
         try {
-            const { data, error } = await client.from('products').select('*');
+            // 2-second timeout promise to prevent mobile 4G/5G hanging
+            const fetchPromise = client.from('products').select('*');
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Fetch timeout')), 2000)
+            );
+            
+            const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
+            
             if (error) {
-                console.error('Error fetching products from Supabase:', error);
+                console.warn('Supabase fetch error, using default products:', error);
                 products = defaultProducts;
-            } else {
-                const mapped = (data || []).map((p, idx) => {
+            } else if (data && data.length > 0) {
+                const mapped = data.map((p) => {
                     let fallbackImg = DEFAULT_IMAGES.latte;
                     if (p.name && p.name.includes('เอสเพรสโซ่')) fallbackImg = DEFAULT_IMAGES.espresso;
                     else if (p.name && (p.name.includes('ชา') || p.name.includes('ที'))) fallbackImg = DEFAULT_IMAGES.tea;
@@ -380,10 +387,12 @@ export async function fetchProducts() {
                         image: (p.image && p.image.startsWith('http')) ? p.image : fallbackImg
                     };
                 });
-                products = mapped.length > 0 ? mapped : defaultProducts;
+                products = mapped;
+            } else {
+                products = defaultProducts;
             }
         } catch (e) {
-            console.error('Exception fetching products:', e);
+            console.warn('Network timeout or offline mode, using default products:', e);
             products = defaultProducts;
         }
     } else {
@@ -395,66 +404,62 @@ export async function fetchProducts() {
 export async function fetchOrders() {
     const client = getClient();
     if (client) {
-        // Query orders with nested relation data (order_details, order_toppings, products)
-        const { data, error } = await client
-            .from('orders')
-            .select(`
-                *,
-                order_details (
+        try {
+            const { data, error } = await client
+                .from('orders')
+                .select(`
                     *,
-                    product:products (
-                        name
-                    ),
-                    order_toppings (
+                    order_details (
                         *,
-                        topping_product:products (
-                            name
+                        product:products ( name ),
+                        order_toppings (
+                            *,
+                            topping_product:products ( name )
                         )
                     )
-                )
-            `);
-            
-        if (error) {
-            console.error('Error fetching orders from Supabase:', error);
-        } else {
-            // Map database relational structure back to flat frontend structure
-            const mappedOrders = (data || []).map(order => {
-                const items = (order.order_details || []).map(detail => {
-                    const toppings = (detail.order_toppings || []).map(topping => {
-                        const tp = topping.topping_product || topping.products || topping.product;
-                        return tp ? tp.name : 'Unknown Topping';
+                `);
+                
+            if (!error && data) {
+                const mappedOrders = data.map(order => {
+                    const items = (order.order_details || []).map(detail => {
+                        const toppings = (detail.order_toppings || []).map(topping => {
+                            const tp = topping.topping_product || topping.products || topping.product;
+                            return tp ? tp.name : 'Unknown Topping';
+                        });
+                        
+                        const prod = detail.product || detail.products;
+                        const prodName = prod ? prod.name : 'Unknown Drink';
+                        
+                        return {
+                            id: detail.product_id,
+                            name: prodName,
+                            quantity: detail.quantity,
+                            price: Number(detail.unit_price),
+                            finalPrice: Number(detail.subtotal_price) / detail.quantity,
+                            options: {
+                                sweetness: parseFloat(detail.sweetness_level) || 100,
+                                toppings: toppings,
+                                notes: detail.note
+                            }
+                        };
                     });
                     
-                    const prod = detail.product || detail.products;
-                    const prodName = prod ? prod.name : 'Unknown Drink';
-                    
                     return {
-                        id: detail.product_id,
-                        name: prodName,
-                        quantity: detail.quantity,
-                        price: Number(detail.unit_price),
-                        finalPrice: Number(detail.subtotal_price) / detail.quantity,
-                        options: {
-                            sweetness: parseFloat(detail.sweetness_level) || 100,
-                            toppings: toppings,
-                            notes: detail.note
-                        }
+                        id: order.order_number,
+                        db_id: order.id,
+                        queue: order.queue_number,
+                        items: items,
+                        total: Number(order.total_amount),
+                        status: order.order_status,
+                        timestamp: order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'
                     };
                 });
                 
-                return {
-                    id: order.order_number,
-                    db_id: order.id,
-                    queue: order.queue_number,
-                    items: items,
-                    total: Number(order.total_amount),
-                    status: order.order_status,
-                    timestamp: order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'
-                };
-            });
-            
-            store.state.orders = mappedOrders;
-            store.notify();
+                store.state.orders = mappedOrders;
+                store.notify();
+            }
+        } catch (err) {
+            console.warn('Error fetching orders:', err);
         }
     }
 }
@@ -462,24 +467,31 @@ export async function fetchOrders() {
 export function subscribeToOrders() {
     const client = getClient();
     if (client) {
-        client
-            .channel('schema-db-changes')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'orders'
-                },
-                (payload) => {
-                    fetchOrders();
-                }
-            )
-            .subscribe();
+        try {
+            client
+                .channel('schema-db-changes')
+                .on(
+                    'postgres_changes',
+                    {
+                        event: '*',
+                        schema: 'public',
+                        table: 'orders'
+                    },
+                    () => {
+                        fetchOrders();
+                    }
+                )
+                .subscribe();
+        } catch (e) {
+            console.warn('Realtime subscription skipped:', e);
+        }
     }
 }
 
-// Call fetch on load
-fetchProducts();
-fetchOrders();
-subscribeToOrders();
+// Call fetchProducts for menu on load (non-blocking)
+try {
+    fetchProducts();
+} catch (e) {
+    console.warn('Initial product fetch error:', e);
+}
+
