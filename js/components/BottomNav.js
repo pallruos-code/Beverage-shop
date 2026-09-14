@@ -10,22 +10,18 @@ export function renderBottomNav() {
     const isCart = currentRoute === 'cart';
 
     nav.innerHTML = `
-        <button id="mob-shop" class="flex flex-col items-center justify-center ${isMenu ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} transition-all">
-            <span class="material-symbols-outlined mb-1" ${isMenu ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>local_cafe</span>
-            <span class="${isMenu ? 'font-bold' : ''}">Shop</span>
+        <button id="mob-shop" class="flex flex-col items-center justify-center ${isMenu ? 'bg-secondary-container text-on-secondary-container rounded-full px-5 py-1.5' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} transition-all">
+            <span class="material-symbols-outlined mb-0.5" ${isMenu ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>local_cafe</span>
+            <span class="${isMenu ? 'font-bold' : ''}">เมนูเครื่องดื่ม</span>
         </button>
-        <button id="mob-kds" class="flex flex-col items-center justify-center ${currentRoute === 'kds' ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} transition-all">
-            <span class="material-symbols-outlined mb-1" ${currentRoute === 'kds' ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>receipt_long</span>
-            <span class="${currentRoute === 'kds' ? 'font-bold' : ''}">KDS</span>
+        <button id="mob-cart" class="flex flex-col items-center justify-center ${isCart ? 'bg-secondary-container text-on-secondary-container rounded-full px-5 py-1.5' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} relative transition-all">
+            <span class="material-symbols-outlined mb-0.5" ${isCart ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>shopping_cart</span>
+            <span class="${isCart ? 'font-bold' : ''}">ตะกร้าสินค้า</span>
+            <span id="mob-cart-badge" class="absolute top-0 right-2 bg-error text-on-error text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center scale-0 transition-transform">0</span>
         </button>
-        <button id="mob-cart" class="flex flex-col items-center justify-center ${isCart ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} relative transition-all">
-            <span class="material-symbols-outlined mb-1" ${isCart ? 'style="font-variation-settings: \'FILL\' 1;"' : ''}>shopping_cart</span>
-            <span class="${isCart ? 'font-bold' : ''}">Cart</span>
-            <span id="mob-cart-badge" class="absolute top-0 right-1 bg-error text-on-error text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center scale-0 transition-transform">0</span>
-        </button>
-        <button id="mob-admin" class="flex flex-col items-center justify-center ${currentRoute === 'admin' ? 'bg-secondary-container text-on-secondary-container rounded-full px-4 py-1' : 'text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-full'} transition-all">
-            <span class="material-symbols-outlined mb-1">admin_panel_settings</span>
-            <span class="${currentRoute === 'admin' ? 'font-bold' : ''}">Admin</span>
+        <button id="mob-staff" class="flex flex-col items-center justify-center text-on-surface-variant/70 hover:text-on-surface hover:bg-surface-container-high px-4 py-1 rounded-full transition-all">
+            <span class="material-symbols-outlined mb-0.5">lock</span>
+            <span class="text-[11px]">พนักงาน</span>
         </button>
     `;
 
@@ -33,16 +29,12 @@ export function renderBottomNav() {
         store.navigate('menu');
     });
 
-    nav.querySelector('#mob-kds').addEventListener('click', () => {
-        store.navigate('kds');
-    });
-
     nav.querySelector('#mob-cart').addEventListener('click', () => {
         store.navigate('cart');
     });
 
-    nav.querySelector('#mob-admin').addEventListener('click', () => {
-        store.navigate('admin');
+    nav.querySelector('#mob-staff').addEventListener('click', () => {
+        store.navigate('login');
     });
 
     const updateBadge = () => {

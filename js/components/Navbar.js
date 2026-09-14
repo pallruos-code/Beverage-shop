@@ -22,25 +22,23 @@ export function renderNavbar() {
                 </div>
             </div>
             
-            <!-- Center Navigation Links -->
+            <!-- Center Navigation Links (Clean Customer View) -->
             <nav class="flex gap-md lg:gap-lg items-center">
                 <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${isMenu ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-shop">หน้าหลัก</a>
-                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'pos' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-pos">จุดขาย (POS)</a>
-                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'kds' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-kds">หน้าจอครัว (KDS)</a>
-                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${currentRoute === 'admin' ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-admin">จัดการหลังบ้าน (Admin)</a>
+                <a class="relative text-white/80 hover:text-white transition-colors py-2 cursor-pointer font-medium ${isCart ? 'text-white border-b-2 border-secondary-container' : ''}" id="nav-cart-link">ตะกร้าสินค้า</a>
             </nav>
             
             <!-- Right Actions -->
             <div class="flex gap-md items-center">
                 <!-- Premium Cart Button -->
-                <button id="nav-cart-btn" class="relative text-white p-2 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors group">
+                <button id="nav-cart-btn" class="relative text-white p-2 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors group" title="ตะกร้าสินค้า">
                     <span class="material-symbols-outlined text-[24px]" ${isCart ? 'style="font-variation-settings: \'FILL\' 1; color:#fdd816;"' : ''}>shopping_cart</span>
                     <span id="cart-badge" class="absolute -top-0.5 -right-0.5 bg-error text-on-error text-[10px] font-bold w-4.5 h-4.5 rounded-full flex items-center justify-center scale-0 transition-transform shadow-md border border-surface">0</span>
                 </button>
                 
-                <!-- Account Button -->
-                <button id="nav-login-btn" class="text-white/80 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-[24px]">account_circle</span>
+                <!-- Staff Login Lock Button -->
+                <button id="nav-login-btn" class="text-white/70 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-full flex items-center justify-center" title="สำหรับพนักงาน / เจ้าของร้าน">
+                    <span class="material-symbols-outlined text-[22px]">lock</span>
                 </button>
             </div>
         </div>
@@ -55,12 +53,8 @@ export function renderNavbar() {
         store.navigate('menu');
     });
 
-    header.querySelector('#nav-pos').addEventListener('click', () => {
-        store.navigate('pos');
-    });
-
-    header.querySelector('#nav-kds').addEventListener('click', () => {
-        store.navigate('kds');
+    header.querySelector('#nav-cart-link').addEventListener('click', () => {
+        store.navigate('cart');
     });
 
     header.querySelector('#nav-cart-btn').addEventListener('click', () => {
