@@ -16,8 +16,8 @@ export function renderMenu() {
             <div class="absolute left-1/3 bottom-0 w-64 h-64 bg-secondary-container/10 rounded-full blur-2xl -ml-24 -mb-24 pointer-events-none"></div>
             
             <div class="relative z-10 max-w-2xl">
-                <span class="bg-secondary-container text-on-surface font-label text-caption px-4 py-1.5 rounded-full uppercase tracking-wider mb-md inline-block shadow-sm">Nordic Yellow Fika</span>
-                <h1 class="font-display text-display text-white mb-md mt-sm tracking-tight leading-tight">สัมผัสสุนทรียภาพ<br/>แห่งกาแฟสไตล์นอร์ดิก</h1>
+                <span class="bg-secondary-container text-on-surface font-label text-caption px-4 py-1.5 rounded-full uppercase tracking-wider mb-md inline-block shadow-sm">Mae Wa Cafe</span>
+                <h1 class="font-display text-display text-white mb-md mt-sm tracking-tight leading-tight">ร้านแม่วะคาเฟ่</h1>
                 <p class="font-body text-body text-white/80 leading-relaxed max-w-xl">พบกับเครื่องดื่มรสชาติละมุนที่เราคัดสรรเมล็ดพันธุ์พิเศษอย่างพิถีพิถัน เพื่อสุนทรียภาพในการเริ่มต้นวันใหม่ของคุณ</p>
             </div>
         </div>
