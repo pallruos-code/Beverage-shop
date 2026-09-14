@@ -61,10 +61,6 @@ export function renderNavbar() {
         store.navigate('cart');
     });
 
-    header.querySelector('#nav-admin').addEventListener('click', () => {
-        store.navigate('admin');
-    });
-
     header.querySelector('#nav-login-btn').addEventListener('click', () => {
         store.navigate('login');
     });
