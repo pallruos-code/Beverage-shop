@@ -72,8 +72,8 @@ export function renderPOS() {
                 </div>
 
                 <!-- Actions -->
-                <div class="flex gap-md mt-sm">
-                    <button class="flex-1 h-[44px] bg-secondary-container text-on-secondary-container font-label text-label rounded-lg hover:bg-secondary-fixed transition-colors flex items-center justify-center gap-xs shadow-sm">
+                <div class="flex gap-md mt-sm no-print">
+                    <button id="pos-print-btn" class="flex-1 h-[44px] bg-secondary-container text-on-secondary-container font-label text-label rounded-lg hover:bg-secondary-fixed transition-colors flex items-center justify-center gap-xs shadow-sm">
                         <span class="material-symbols-outlined">print</span>
                         Print Receipt (พิมพ์ใบเสร็จ)
                     </button>
@@ -87,7 +87,7 @@ export function renderPOS() {
             <!-- Right Column: Receipt Preview -->
             <div class="col-span-1 lg:col-span-5 flex justify-center">
                 <div class="w-full max-w-[320px]">
-                    <div class="bg-surface shadow-md border border-border p-lg pb-0 relative">
+                    <div id="printable-receipt" class="bg-surface shadow-md border border-border p-lg pb-0 relative">
                         <div class="text-center mb-md border-b border-dashed border-outline-variant pb-md">
                             <h3 class="font-dimensions text-dimensions font-bold">FikaSmart Store #042</h3>
                             <p class="font-dimensions text-[10px] text-text-secondary mt-xs">Date: ${new Date().toLocaleDateString()} ${latestOrder.timestamp}</p>
@@ -148,6 +148,13 @@ export function renderPOS() {
             </div>
         </div>
     `;
+
+    const printBtn = container.querySelector('#pos-print-btn');
+    if (printBtn) {
+        printBtn.addEventListener('click', () => {
+            window.print();
+        });
+    }
 
     container.querySelector('#pos-new-order').addEventListener('click', () => {
         store.navigate('menu');

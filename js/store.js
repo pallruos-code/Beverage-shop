@@ -63,6 +63,146 @@ function showNewOrderToast(order) {
     }
 }
 
+// Chime for customer when their order is completed & ready
+function playOrderReadySound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+        
+        // 4-note celebration melody (C5, E5, G5, C6)
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.16);
+            gain.gain.setValueAtTime(0.35, now + idx * 0.16);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.16 + 0.6);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.16);
+            osc.stop(now + idx * 0.16 + 0.6);
+        });
+    } catch (e) {
+        console.warn('Audio ready sound error:', e);
+    }
+}
+
+// Modal notification displayed on customer screen when their drink is ready
+function showCustomerOrderReadyModal(order) {
+    const existing = document.getElementById('order-ready-modal');
+    if (existing) existing.remove();
+    
+    const modal = document.createElement('div');
+    modal.id = 'order-ready-modal';
+    modal.className = 'fixed inset-0 z-[99999] flex items-center justify-center bg-black/75 backdrop-blur-md p-4';
+    modal.innerHTML = `
+        <div class="bg-surface w-full max-w-md rounded-3xl p-6 shadow-2xl border-4 border-secondary-container text-center relative overflow-hidden">
+            <div class="w-20 h-20 bg-secondary-container rounded-full flex items-center justify-center mx-auto mb-4 text-on-secondary-container shadow-xl">
+                <span class="material-symbols-outlined text-[48px]">local_cafe</span>
+            </div>
+            <span class="bg-primary text-white font-bold text-xs px-4 py-1.5 rounded-full inline-block mb-3 shadow-sm">🔔 ทำเครื่องดื่มเสร็จแล้ว!</span>
+            <h2 class="font-h1 text-2xl font-extrabold text-text-primary mb-1">เครื่องดื่มพร้อมเสิร์ฟแล้วครับ</h2>
+            <div class="my-4 py-4 px-6 bg-surface-container rounded-2xl border-2 border-secondary-container/60 shadow-inner">
+                <div class="text-xs text-text-secondary font-medium">หมายเลขคิวของคุณ</div>
+                <div class="font-display text-5xl font-black text-primary my-1">${order.queue || order.queue_number}</div>
+                <div class="text-xs text-text-secondary">คุณ: <strong>${order.customer_name || 'ลูกค้า'}</strong></div>
+            </div>
+            <p class="text-body-sm text-text-secondary mb-6 leading-relaxed">
+                กรุณานำหมายเลขคิวนี้มารับเครื่องดื่มที่เคาน์เตอร์บาร์น้ำได้เลยครับ ขอให้เพลิดเพลินกับเครื่องดื่มนะครับ! ☕✨
+            </p>
+            <div class="flex flex-col gap-2">
+                <button id="ready-ack-btn" class="w-full h-13 py-3 bg-primary text-on-primary font-bold text-base rounded-xl hover:bg-primary-hover shadow-lg transition-all active:scale-[0.98]">
+                    รับเครื่องดื่มเรียบร้อยแล้ว
+                </button>
+                <button id="ready-print-btn" class="w-full h-11 bg-surface border border-border text-text-primary font-label text-label rounded-xl hover:bg-surface-container flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px]">print</span> ดูใบเสร็จ / สั่งพิมพ์
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    modal.querySelector('#ready-ack-btn').addEventListener('click', () => {
+        if (store.state.activeOrder) {
+            store.state.activeOrder.acknowledged = true;
+            localStorage.setItem('active_customer_order', JSON.stringify(store.state.activeOrder));
+            store.notify();
+        }
+        modal.remove();
+    });
+
+    modal.querySelector('#ready-print-btn').addEventListener('click', () => {
+        modal.remove();
+        if (window.showReceiptModal && store.state.activeOrder) {
+            window.showReceiptModal(store.state.activeOrder);
+        }
+    });
+}
+
+// Background poller to check if the customer's active order has been completed by staff
+let customerTrackingInterval = null;
+
+export async function checkCustomerOrderStatus() {
+    const active = store.state.activeOrder;
+    if (!active || !active.id) {
+        if (customerTrackingInterval) {
+            clearInterval(customerTrackingInterval);
+            customerTrackingInterval = null;
+        }
+        return;
+    }
+    
+    // If order is already completed and acknowledged, stop polling
+    if ((active.status === 'COMPLETED' || active.status === 'SERVED') && active.acknowledged) {
+        if (customerTrackingInterval) {
+            clearInterval(customerTrackingInterval);
+            customerTrackingInterval = null;
+        }
+        return;
+    }
+
+    try {
+        const response = await fetch(`${GAS_WEB_APP_URL}?action=getOrders`);
+        if (response.ok) {
+            const result = await response.json();
+            if (result && result.status === 'success' && Array.isArray(result.data)) {
+                const found = result.data.find(o => o.id === active.id || o.order_number === active.id);
+                if (found) {
+                    const oldStatus = active.status;
+                    const newStatus = found.status || found.order_status;
+                    
+                    if (oldStatus !== newStatus) {
+                        active.status = newStatus;
+                        active.order_status = newStatus;
+                        localStorage.setItem('active_customer_order', JSON.stringify(active));
+                        store.notify();
+                        
+                        // If order is now COMPLETED or READY
+                        if (newStatus === 'COMPLETED' || newStatus === 'READY' || newStatus === 'SERVED') {
+                            playOrderReadySound();
+                            if (navigator.vibrate) {
+                                try { navigator.vibrate([300, 150, 300, 150, 500]); } catch (e) {}
+                            }
+                            showCustomerOrderReadyModal(active);
+                        }
+                    }
+                }
+            }
+        }
+    } catch (err) {
+        console.warn('Customer tracking poll error:', err);
+    }
+}
+
+export function startCustomerOrderTracking() {
+    if (customerTrackingInterval) return;
+    checkCustomerOrderStatus();
+    customerTrackingInterval = setInterval(checkCustomerOrderStatus, 4000);
+}
+
 async function syncOrderToGoogleSheets(order) {
     try {
         const items = (order.items || []).map(item => ({
@@ -126,6 +266,13 @@ export const store = {
         isAuthenticated: localStorage.getItem('staff_auth') === 'true',
         customerEmail: localStorage.getItem('customer_email') || '',
         customerName: localStorage.getItem('customer_name') || '',
+        activeOrder: (() => {
+            try {
+                return JSON.parse(localStorage.getItem('active_customer_order') || 'null');
+            } catch (e) {
+                return null;
+            }
+        })(),
         pendingRoute: null
     },
     listeners: [],
@@ -249,7 +396,7 @@ export const store = {
         return this.state.cart.reduce((count, item) => count + item.quantity, 0);
     },
     
-    async checkout() {
+    async checkout(paymentMethod = 'promptpay') {
         if (this.state.cart.length === 0) return null;
         
         const cartItems = [...this.state.cart];
@@ -269,18 +416,25 @@ export const store = {
             items: cartItems,
             total: totalAmount,
             total_amount: totalAmount,
+            payment_method: paymentMethod, // 'promptpay' or 'cash'
             status: 'PENDING', // 'PENDING', 'PREPARING', 'COMPLETED'
             order_status: 'PENDING',
-            timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            date: new Date().toLocaleDateString('th-TH')
         };
         
         // Add to front of orders
         this.state.orders.unshift(newOrder);
+        this.state.activeOrder = newOrder;
+        localStorage.setItem('active_customer_order', JSON.stringify(newOrder));
         this.state.cart = []; // Empty cart
         this.notify();
         
         // Sync to Google Sheets (บันทึกลง Google Sheets ทันที)
         syncOrderToGoogleSheets(newOrder);
+        
+        // Start live tracking on customer screen
+        startCustomerOrderTracking();
         
         return newOrder;
     },
@@ -413,5 +567,14 @@ try {
     fetchProducts();
 } catch (e) {
     console.warn('Initial product fetch error:', e);
+}
+
+// Automatically resume customer order tracking if an active order is not completed
+try {
+    if (store.state.activeOrder && (!store.state.activeOrder.acknowledged || store.state.activeOrder.status !== 'COMPLETED')) {
+        startCustomerOrderTracking();
+    }
+} catch (e) {
+    console.warn('Initial customer tracking error:', e);
 }
 

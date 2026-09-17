@@ -123,6 +123,34 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        /* Print Styles */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            body * {
+                visibility: hidden;
+            }
+            #printable-receipt, #printable-receipt * {
+                visibility: visible;
+            }
+            #printable-receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100% !important;
+                max-width: 360px !important;
+                margin: 0 auto !important;
+                padding: 10px !important;
+                background: white !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-background text-on-background font-body text-body antialiased selection:bg-secondary-container selection:text-on-secondary-container min-h-screen">

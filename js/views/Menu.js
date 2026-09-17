@@ -8,7 +8,39 @@ export function renderMenu() {
     let activeCategory = 'ทั้งหมด';
     let searchQuery = '';
 
+    const activeOrder = store.state.activeOrder;
+    let activeBannerHtml = '';
+    if (activeOrder && (!activeOrder.acknowledged || activeOrder.status !== 'COMPLETED')) {
+        const isReady = activeOrder.status === 'COMPLETED' || activeOrder.status === 'READY' || activeOrder.status === 'SERVED';
+        const isPrep = activeOrder.status === 'PREPARING';
+        const statusText = isReady ? 'เครื่องดื่มเสร็จแล้ว! พร้อมรับที่เคาน์เตอร์ 🎉' : isPrep ? 'บาร์กำลังเตรียมเครื่องดื่ม...' : 'รับออเดอร์แล้ว (รอดำเนินการ)';
+        const bgClass = isReady ? 'bg-secondary-container text-on-secondary-container border-2 border-primary' : 'bg-primary text-on-primary';
+        
+        activeBannerHtml = `
+            <div class="${bgClass} rounded-2xl p-4 mb-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <div class="w-12 h-12 ${isReady ? 'bg-primary text-white' : 'bg-secondary-container text-on-secondary-container'} rounded-full flex items-center justify-center shrink-0 shadow-md">
+                        <span class="material-symbols-outlined text-[28px] ${isReady ? 'animate-bounce' : 'animate-pulse'}">local_cafe</span>
+                    </div>
+                    <div>
+                        <div class="text-xs ${isReady ? 'text-primary font-bold' : 'text-white/70'} font-medium">ติดตามสถานะออเดอร์ของคุณ</div>
+                        <div class="font-bold text-base flex flex-wrap items-center gap-2">
+                            <span>คิว: <strong class="text-xl">${activeOrder.queue || activeOrder.queue_number}</strong></span>
+                            <span class="text-xs px-2.5 py-0.5 rounded-full ${isReady ? 'bg-primary text-white font-bold' : 'bg-white/20 text-white'}">${statusText}</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="view-active-receipt-btn" class="w-full sm:w-auto px-4 py-2.5 ${isReady ? 'bg-primary text-white hover:bg-primary-hover' : 'bg-secondary-container text-on-secondary-container hover:bg-secondary-fixed'} font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 active:scale-95">
+                    <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                    ดูใบเสร็จ / พิมพ์
+                </button>
+            </div>
+        `;
+    }
+
     container.innerHTML = `
+        ${activeBannerHtml}
+
         <!-- Stunning Hero Section -->
         <div class="relative bg-gradient-to-r from-primary to-primary-hover text-on-primary rounded-2xl p-8 md:p-12 mb-xl overflow-hidden shadow-lg">
             <!-- Background shapes for premium aesthetics -->
@@ -125,6 +157,16 @@ export function renderMenu() {
     const unsubscribe = store.subscribe(() => {
         renderGrid();
     });
+
+    // Event listener for view active receipt button
+    const receiptBtn = container.querySelector('#view-active-receipt-btn');
+    if (receiptBtn) {
+        receiptBtn.addEventListener('click', () => {
+            if (window.showReceiptModal && store.state.activeOrder) {
+                window.showReceiptModal(store.state.activeOrder);
+            }
+        });
+    }
 
     renderGrid();
 
