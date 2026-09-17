@@ -1,6 +1,6 @@
 // store.js
 // Google Apps Script Web App URL for syncing orders to Google Sheets
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyAbWrvkNrfQFg3h9txk0e1r_fLTYNw1qwTFZJiwWhdMCpIpMkCUDstiQFaNefstanaYg/exec';
+const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz3_UyqavWasMSEZDTvB7UCT3whVfPsManAxQNbpNCYOaZjdQFcuC0-eCzJLwHaesu8Jw/exec';
 
 function playNewOrderSound() {
     try {
