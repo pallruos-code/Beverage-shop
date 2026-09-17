@@ -131,10 +131,112 @@ export function renderCart() {
         const checkoutBtn = container.querySelector('#checkout-btn');
         if (checkoutBtn) {
             checkoutBtn.addEventListener('click', () => {
-                const order = store.checkout();
-                if (order) {
-                    store.navigate('pos');
+                const customerEmail = localStorage.getItem('customer_email');
+                const customerName = localStorage.getItem('customer_name');
+                
+                // If customer hasn't provided email yet, show registration prompt
+                if (!customerEmail) {
+                    showCustomerModal(() => {
+                        processCheckout();
+                    });
+                } else {
+                    processCheckout();
                 }
+            });
+        }
+
+        function showCustomerModal(onSuccess) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+            modal.innerHTML = `
+                <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 border border-border">
+                    <div class="text-center mb-6">
+                        <div class="w-14 h-14 bg-secondary-container rounded-full flex items-center justify-center mx-auto mb-3 text-on-secondary-container">
+                            <span class="material-symbols-outlined text-[32px]">person_add</span>
+                        </div>
+                        <h3 class="font-h2 text-h2 text-text-primary mb-1">ยินดีต้อนรับสู่ ร้านแม่วะคาเฟ่</h3>
+                        <p class="font-body-sm text-body-sm text-text-secondary">กรุณากรอกอีเมลของคุณเพื่อยืนยันออเดอร์และรับการแจ้งเตือน</p>
+                    </div>
+
+                    <form id="cust-form" class="flex flex-col gap-4">
+                        <div>
+                            <label class="font-label text-label text-text-primary block mb-1">อีเมลของคุณ <span class="text-error">*</span></label>
+                            <input type="email" id="cust-email" required placeholder="your.email@example.com" class="w-full h-11 px-3 bg-surface-container-low border border-border rounded-lg text-body-sm focus:border-primary outline-none" />
+                        </div>
+                        <div>
+                            <label class="font-label text-label text-text-primary block mb-1">ชื่อเล่น หรือ เบอร์โต๊ะ <span class="text-error">*</span></label>
+                            <input type="text" id="cust-name" required placeholder="เช่น โต๊ะ 3 / คุณส้ม" class="w-full h-11 px-3 bg-surface-container-low border border-border rounded-lg text-body-sm focus:border-primary outline-none" />
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                            <button type="button" id="cust-cancel" class="flex-1 h-11 bg-surface border border-border text-text-secondary rounded-lg font-label text-label hover:bg-surface-container">ยกเลิก</button>
+                            <button type="submit" class="flex-1 h-11 bg-primary text-on-primary rounded-lg font-label text-label hover:bg-primary-hover font-bold">ยืนยันและสั่งซื้อ</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            modal.querySelector('#cust-cancel').addEventListener('click', () => modal.remove());
+            modal.querySelector('#cust-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = modal.querySelector('#cust-email').value.trim();
+                const name = modal.querySelector('#cust-name').value.trim();
+                if (email && name) {
+                    store.setCustomer(email, name);
+                    modal.remove();
+                    if (onSuccess) onSuccess();
+                }
+            });
+        }
+
+        async function processCheckout() {
+            const checkoutBtn = container.querySelector('#checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.innerHTML = `
+                    <span class="material-symbols-outlined animate-spin text-[20px]">sync</span>
+                    กำลังส่งออเดอร์...
+                `;
+            }
+
+            const order = await store.checkout();
+            if (order) {
+                showSuccessModal(order);
+            }
+        }
+
+        function showSuccessModal(order) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+            modal.innerHTML = `
+                <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 border border-border text-center">
+                    <div class="w-16 h-16 bg-secondary-container rounded-full flex items-center justify-center mx-auto mb-4 text-on-secondary-container shadow-sm">
+                        <span class="material-symbols-outlined text-[40px]">check_circle</span>
+                    </div>
+                    <span class="bg-secondary-container text-on-secondary-container font-bold text-xs px-3 py-1 rounded-full inline-block mb-2">สั่งซื้อสำเร็จแล้ว</span>
+                    <h3 class="font-h1 text-h1 text-text-primary mb-1">คิวของคุณ</h3>
+                    <div class="my-4 py-4 px-6 bg-surface-container-low border border-border rounded-xl">
+                        <div class="font-display text-4xl font-extrabold text-primary">${order.queue}</div>
+                        <div class="text-caption text-text-secondary mt-1">เลขออเดอร์: ${order.id}</div>
+                    </div>
+                    <div class="text-left bg-surface-variant p-3 rounded-lg text-caption text-text-secondary mb-5 space-y-1">
+                        <div>👤 ลูกค้า: <strong>${order.customer_name}</strong></div>
+                        <div>✉️ อีเมล: <strong>${order.customer_email}</strong></div>
+                        <div>💰 ยอดรวม: <strong class="text-primary text-sm">฿${order.total.toFixed(2)}</strong></div>
+                    </div>
+                    <p class="text-body-sm text-text-secondary mb-6">
+                        ข้อมูลของคุณถูกส่งไปยังห้องครัวและบันทึกลงระบบ Google Sheets เรียบร้อยแล้ว กรุณารอเรียกคิวที่หน้าร้านครับ
+                    </p>
+                    <button id="finish-btn" class="w-full h-12 bg-primary text-on-primary font-bold rounded-xl hover:bg-primary-hover transition-colors shadow-md">
+                        กลับไปหน้าเมนูเครื่องดื่ม
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            modal.querySelector('#finish-btn').addEventListener('click', () => {
+                modal.remove();
+                store.navigate('menu');
             });
         }
     }

@@ -1,5 +1,5 @@
-
 /* --- js/supabase.js --- */
+
 // supabase.js
 const SUPABASE_URL = 'https://lpwljgptpvtwgdsizvbg.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_8gMezicicJYtIZk-dS27KQ_tDm_Co7z';
@@ -17,11 +17,73 @@ function getSupabase() {
 
 
 /* --- js/store.js --- */
+
 // store.js
 const getClient = () => (typeof getSupabase !== 'undefined' ? getSupabase() : null);
 
 // Google Apps Script Web App URL for syncing orders to Google Sheets
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyAbWrvkNrfQFg3h9txk0e1r_fLTYNw1qwTFZJiwWhdMCpIpMkCUDstiQFaNefstanaYg/exec';
+
+function playNewOrderSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+        
+        // Bell note 1 (E5)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, now);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.5);
+        
+        // Bell note 2 (B5)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(987.77, now + 0.15);
+        gain2.gain.setValueAtTime(0.3, now + 0.15);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.15);
+        osc2.stop(now + 0.8);
+    } catch (e) {
+        console.warn('Audio chime error:', e);
+    }
+}
+
+function showNewOrderToast(order) {
+    try {
+        const existing = document.getElementById('order-alert-toast');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.id = 'order-alert-toast';
+        toast.className = 'fixed top-4 right-4 z-[9999] bg-primary text-on-primary border-2 border-secondary-container shadow-2xl rounded-2xl p-4 flex items-center gap-3 animate-bounce max-w-sm';
+        toast.innerHTML = `
+            <span class="material-symbols-outlined text-secondary-container text-[36px]">notifications_active</span>
+            <div>
+                <h4 class="font-bold text-sm text-secondary-container">มีออเดอร์ใหม่เข้ามา!</h4>
+                <p class="text-xs text-white">คิว: <span class="font-bold text-base text-white">${order.queue || order.queue_number}</span> (${order.customer_name || 'ลูกค้า'})</p>
+                <p class="text-[11px] text-white/70">ยอดรวม: ฿${(order.total || order.total_amount || 0).toFixed(2)}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" class="ml-auto text-white/60 hover:text-white p-1">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => { if (toast.parentElement) toast.remove(); }, 6000);
+    } catch (e) {
+        console.warn('Toast display error:', e);
+    }
+}
 
 async function syncOrderToGoogleSheets(order) {
     try {
@@ -38,16 +100,18 @@ async function syncOrderToGoogleSheets(order) {
             action: 'addOrder',
             orderNumber: order.id,
             queueNumber: order.queue,
+            customerEmail: order.customer_email || localStorage.getItem('customer_email') || '-',
+            customerName: order.customer_name || localStorage.getItem('customer_name') || 'ลูกค้าทั่วไป',
             items: items,
             total: order.total,
             status: order.status,
             timestamp: new Date().toISOString()
         };
 
-        const response = await fetch(GAS_WEB_APP_URL, {
+        await fetch(GAS_WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify(payload)
         });
 
@@ -57,12 +121,33 @@ async function syncOrderToGoogleSheets(order) {
     }
 }
 
+async function syncOrderStatusToGoogleSheets(orderNumber, status) {
+    try {
+        await fetch(GAS_WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({
+                action: 'updateStatus',
+                orderNumber: orderNumber,
+                status: status
+            })
+        });
+    } catch (err) {
+        console.warn('Error updating status in Google Sheets:', err);
+    }
+}
+
+let staffPollingInterval = null;
+
 const store = {
     state: {
         cart: [],
         orders: [], // For KDS
         currentRoute: 'menu', // 'menu', 'cart', 'admin', 'pos', 'kds', 'login'
         isAuthenticated: localStorage.getItem('staff_auth') === 'true',
+        customerEmail: localStorage.getItem('customer_email') || '',
+        customerName: localStorage.getItem('customer_name') || '',
         pendingRoute: null
     },
     listeners: [],
@@ -78,6 +163,14 @@ const store = {
         this.listeners.forEach(listener => listener(this.state));
     },
     
+    setCustomer(email, name) {
+        this.state.customerEmail = email;
+        this.state.customerName = name;
+        localStorage.setItem('customer_email', email);
+        localStorage.setItem('customer_name', name);
+        this.notify();
+    },
+
     verifyPasscode(passcode) {
         const STAFF_PASSCODE = '11333355555';
         if (passcode === STAFF_PASSCODE) {
@@ -94,6 +187,10 @@ const store = {
     logoutStaff() {
         this.state.isAuthenticated = false;
         localStorage.removeItem('staff_auth');
+        if (staffPollingInterval) {
+            clearInterval(staffPollingInterval);
+            staffPollingInterval = null;
+        }
         this.navigate('menu');
     },
 
@@ -105,6 +202,22 @@ const store = {
         } else {
             this.state.currentRoute = route;
         }
+        
+        // Start background polling when entering staff views so new orders pop up immediately
+        if (['admin', 'pos', 'kds'].includes(this.state.currentRoute)) {
+            if (!staffPollingInterval) {
+                fetchOrders();
+                staffPollingInterval = setInterval(() => {
+                    fetchOrders();
+                }, 4000);
+            }
+        } else {
+            if (staffPollingInterval) {
+                clearInterval(staffPollingInterval);
+                staffPollingInterval = null;
+            }
+        }
+
         this.notify();
     },
     
@@ -158,11 +271,6 @@ const store = {
         return this.state.cart.reduce((count, item) => count + item.quantity, 0);
     },
     
-    navigate(route) {
-        this.state.currentRoute = route;
-        this.notify();
-    },
-    
     async checkout() {
         if (this.state.cart.length === 0) return null;
         
@@ -170,103 +278,30 @@ const store = {
         const totalAmount = this.getCartTotal();
         const orderNum = 'ORD-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(1000 + Math.random() * 9000);
         const queueNum = 'A' + Math.floor(100 + Math.random() * 900);
+        const custEmail = this.state.customerEmail || localStorage.getItem('customer_email') || '-';
+        const custName = this.state.customerName || localStorage.getItem('customer_name') || 'ลูกค้าทั่วไป';
         
         const newOrder = {
             id: orderNum,
+            order_number: orderNum,
             queue: queueNum,
+            queue_number: queueNum,
+            customer_email: custEmail,
+            customer_name: custName,
             items: cartItems,
             total: totalAmount,
+            total_amount: totalAmount,
             status: 'PENDING', // 'PENDING', 'PREPARING', 'COMPLETED'
+            order_status: 'PENDING',
             timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         };
         
-        this.state.orders.push(newOrder);
+        // Add to front of orders
+        this.state.orders.unshift(newOrder);
         this.state.cart = []; // Empty cart
         this.notify();
         
-        // Insert into Supabase (Relational Database Inserts)
-        const client = getClient();
-        if (client) {
-            try {
-                // 1. Insert into orders
-                const { data: orderData, error: orderError } = await client
-                    .from('orders')
-                    .insert([
-                        {
-                            order_number: orderNum,
-                            queue_number: queueNum,
-                            total_amount: totalAmount,
-                            order_status: 'PENDING',
-                            payment_status: 'PENDING',
-                            estimated_waiting_time: 10
-                        }
-                    ])
-                    .select();
-                
-                if (orderError) throw orderError;
-                if (orderData && orderData.length > 0) {
-                    const orderUuid = orderData[0].id;
-                    newOrder.db_id = orderUuid; // Cache the UUID key locally
-                    
-                    // 2. Insert into order_details (bulk insert)
-                    const detailsToInsert = cartItems.map(item => {
-                        // Find matching product UUID from products state
-                        let prodId = item.id;
-                        const match = products.find(p => p.name === item.name || p.id === item.id);
-                        if (match) prodId = match.id;
-                        
-                        return {
-                            order_id: orderUuid,
-                            product_id: prodId,
-                            quantity: item.quantity,
-                            sweetness_level: item.options && item.options.sweetness ? `${item.options.sweetness}%` : '100%',
-                            unit_price: item.price,
-                            subtotal_price: (item.finalPrice || item.price) * item.quantity,
-                            note: item.options && item.options.notes ? item.options.notes : null
-                        };
-                    });
-                    
-                    const { data: detailsData, error: detailsError } = await client
-                        .from('order_details')
-                        .insert(detailsToInsert)
-                        .select();
-                        
-                    if (detailsError) throw detailsError;
-                    
-                    // 3. Insert into order_toppings (if any)
-                    const toppingsToInsert = [];
-                    cartItems.forEach((item, index) => {
-                        if (item.options && item.options.toppings && item.options.toppings.length > 0) {
-                            const detailRow = detailsData[index];
-                            if (detailRow) {
-                                item.options.toppings.forEach(toppingName => {
-                                    const toppingProduct = products.find(p => p.name.toLowerCase() === toppingName.toLowerCase() || p.id === toppingName);
-                                    if (toppingProduct) {
-                                        toppingsToInsert.push({
-                                            order_detail_id: detailRow.id,
-                                            topping_product_id: toppingProduct.id,
-                                            quantity: 1,
-                                            price_per_unit: toppingProduct.price || 0.30
-                                        });
-                                    }
-                                });
-                            }
-                        }
-                    });
-                    
-                    if (toppingsToInsert.length > 0) {
-                        const { error: toppingsError } = await client
-                            .from('order_toppings')
-                            .insert(toppingsToInsert);
-                        if (toppingsError) throw toppingsError;
-                    }
-                }
-            } catch (err) {
-                console.error('Error saving order relationally to Supabase:', err);
-            }
-        }
-        
-        // Sync to Google Sheets (ส่งข้อมูลออเดอร์ไปบันทึกใน Google Sheets ด้วย)
+        // Sync to Google Sheets (บันทึกลง Google Sheets ทันที)
         syncOrderToGoogleSheets(newOrder);
         
         return newOrder;
@@ -279,24 +314,8 @@ const store = {
             order.order_status = newStatus;
             this.notify();
             
-            // Sync with Supabase
-            const client = getClient();
-            if (client) {
-                // Update both potential column names (status or order_status)
-                const updatePayload = {
-                    status: newStatus,
-                    order_status: newStatus
-                };
-                
-                // Match either id, order_number or db_id matching orderId
-                const matchId = order.db_id || orderId;
-                client.from('orders')
-                    .update(updatePayload)
-                    .or(`id.eq.${matchId},order_number.eq.${orderId}`)
-                    .then(({ error }) => {
-                        if (error) console.error('Error updating order status in Supabase:', error);
-                    });
-            }
+            // Sync status update to Google Sheets
+            syncOrderStatusToGoogleSheets(order.id || order.order_number, newStatus);
         }
     }
 };
@@ -419,65 +438,29 @@ async function fetchProducts() {
 }
 
 async function fetchOrders() {
-    const client = getClient();
-    if (client) {
-        try {
-            const { data, error } = await client
-                .from('orders')
-                .select(`
-                    *,
-                    order_details (
-                        *,
-                        product:products ( name ),
-                        order_toppings (
-                            *,
-                            topping_product:products ( name )
-                        )
-                    )
-                `);
+    try {
+        const response = await fetch(`${GAS_WEB_APP_URL}?action=getOrders`);
+        if (response.ok) {
+            const result = await response.json();
+            if (result && result.status === 'success' && Array.isArray(result.data)) {
+                const incomingOrders = result.data;
+                const oldIds = new Set(store.state.orders.map(o => o.id || o.order_number));
                 
-            if (!error && data) {
-                const mappedOrders = data.map(order => {
-                    const items = (order.order_details || []).map(detail => {
-                        const toppings = (detail.order_toppings || []).map(topping => {
-                            const tp = topping.topping_product || topping.products || topping.product;
-                            return tp ? tp.name : 'Unknown Topping';
-                        });
-                        
-                        const prod = detail.product || detail.products;
-                        const prodName = prod ? prod.name : 'Unknown Drink';
-                        
-                        return {
-                            id: detail.product_id,
-                            name: prodName,
-                            quantity: detail.quantity,
-                            price: Number(detail.unit_price),
-                            finalPrice: Number(detail.subtotal_price) / detail.quantity,
-                            options: {
-                                sweetness: parseFloat(detail.sweetness_level) || 100,
-                                toppings: toppings,
-                                notes: detail.note
-                            }
-                        };
-                    });
-                    
-                    return {
-                        id: order.order_number,
-                        db_id: order.id,
-                        queue: order.queue_number,
-                        items: items,
-                        total: Number(order.total_amount),
-                        status: order.order_status,
-                        timestamp: order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'
-                    };
-                });
+                // If a new order is detected while on staff screen, trigger chime & toast!
+                const hasNew = incomingOrders.some(o => !oldIds.has(o.id || o.order_number));
+                if (hasNew && store.state.orders.length > 0) {
+                    playNewOrderSound();
+                    const newest = incomingOrders[0];
+                    if (newest) showNewOrderToast(newest);
+                }
                 
-                store.state.orders = mappedOrders;
+                store.state.orders = incomingOrders;
                 store.notify();
+                return;
             }
-        } catch (err) {
-            console.warn('Error fetching orders:', err);
         }
+    } catch (err) {
+        console.warn('Google Sheets fetchOrders error:', err);
     }
 }
 
@@ -511,7 +494,6 @@ try {
 } catch (e) {
     console.warn('Initial product fetch error:', e);
 }
-
 
 
 /* --- js/components/BottomNav.js --- */
@@ -783,6 +765,7 @@ function renderAdmin() {
                                 <thead>
                                     <tr class="bg-surface-container-low border-b border-border">
                                         <th class="p-md font-label text-label text-outline whitespace-nowrap">รหัสออเดอร์</th>
+                                        <th class="p-md font-label text-label text-outline whitespace-nowrap">ลูกค้า / โต๊ะ</th>
                                         <th class="p-md font-label text-label text-outline whitespace-nowrap">เวลา</th>
                                         <th class="p-md font-label text-label text-outline whitespace-nowrap">รายการ</th>
                                         <th class="p-md font-label text-label text-outline whitespace-nowrap">จำนวนเงิน</th>
@@ -795,10 +778,14 @@ function renderAdmin() {
                                         const ordTime = order.timestamp || (order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A');
                                         const ordTotal = order.total !== undefined ? order.total : (order.total_amount !== undefined ? Number(order.total_amount) : 0);
                                         const ordStatus = order.status || order.order_status || 'PENDING';
+                                        const custName = order.customer_name || 'ลูกค้าทั่วไป';
+                                        const custEmail = order.customer_email || '-';
                                         
                                         let itemsText = 'ไม่มีรายละเอียด';
                                         if (order.items && order.items.length > 0) {
                                             itemsText = order.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
+                                        } else if (order.itemsSummary) {
+                                            itemsText = order.itemsSummary;
                                         }
                                         
                                         let statusBadge = '';
@@ -815,8 +802,12 @@ function renderAdmin() {
                                         return `
                                             <tr class="hover:bg-surface-container-lowest transition-colors">
                                                 <td class="p-md font-dimensions text-body-sm text-primary font-bold">#${ordNum}</td>
+                                                <td class="p-md font-body-sm text-body-sm">
+                                                    <div class="font-bold text-primary">${custName}</div>
+                                                    <div class="text-[11px] text-text-secondary">${custEmail}</div>
+                                                </td>
                                                 <td class="p-md font-dimensions text-body-sm text-on-surface-variant">${ordTime}</td>
-                                                <td class="p-md font-body-sm text-body-sm text-on-surface">${itemsText}</td>
+                                                <td class="p-md font-body-sm text-body-sm text-on-surface max-w-xs truncate" title="${itemsText}">${itemsText}</td>
                                                 <td class="p-md font-dimensions text-body-sm text-on-surface">฿${ordTotal.toFixed(2)}</td>
                                                 <td class="p-md">
                                                     ${statusBadge}
@@ -824,7 +815,7 @@ function renderAdmin() {
                                             </tr>
                                         `;
                                     }).join('')}
-                                    ${ordersList.length === 0 ? '<tr><td colspan="5" class="p-md text-center text-outline font-body-sm">ไม่มีคำสั่งซื้อที่ค้างอยู่</td></tr>' : ''}
+                                    ${ordersList.length === 0 ? '<tr><td colspan="6" class="p-md text-center text-outline font-body-sm">ไม่มีคำสั่งซื้อที่ค้างอยู่</td></tr>' : ''}
                                 </tbody>
                             </table>
                         </div>
@@ -991,10 +982,112 @@ function renderCart() {
         const checkoutBtn = container.querySelector('#checkout-btn');
         if (checkoutBtn) {
             checkoutBtn.addEventListener('click', () => {
-                const order = store.checkout();
-                if (order) {
-                    store.navigate('pos');
+                const customerEmail = localStorage.getItem('customer_email');
+                const customerName = localStorage.getItem('customer_name');
+                
+                // If customer hasn't provided email yet, show registration prompt
+                if (!customerEmail) {
+                    showCustomerModal(() => {
+                        processCheckout();
+                    });
+                } else {
+                    processCheckout();
                 }
+            });
+        }
+
+        function showCustomerModal(onSuccess) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+            modal.innerHTML = `
+                <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 border border-border">
+                    <div class="text-center mb-6">
+                        <div class="w-14 h-14 bg-secondary-container rounded-full flex items-center justify-center mx-auto mb-3 text-on-secondary-container">
+                            <span class="material-symbols-outlined text-[32px]">person_add</span>
+                        </div>
+                        <h3 class="font-h2 text-h2 text-text-primary mb-1">ยินดีต้อนรับสู่ ร้านแม่วะคาเฟ่</h3>
+                        <p class="font-body-sm text-body-sm text-text-secondary">กรุณากรอกอีเมลของคุณเพื่อยืนยันออเดอร์และรับการแจ้งเตือน</p>
+                    </div>
+
+                    <form id="cust-form" class="flex flex-col gap-4">
+                        <div>
+                            <label class="font-label text-label text-text-primary block mb-1">อีเมลของคุณ <span class="text-error">*</span></label>
+                            <input type="email" id="cust-email" required placeholder="your.email@example.com" class="w-full h-11 px-3 bg-surface-container-low border border-border rounded-lg text-body-sm focus:border-primary outline-none" />
+                        </div>
+                        <div>
+                            <label class="font-label text-label text-text-primary block mb-1">ชื่อเล่น หรือ เบอร์โต๊ะ <span class="text-error">*</span></label>
+                            <input type="text" id="cust-name" required placeholder="เช่น โต๊ะ 3 / คุณส้ม" class="w-full h-11 px-3 bg-surface-container-low border border-border rounded-lg text-body-sm focus:border-primary outline-none" />
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                            <button type="button" id="cust-cancel" class="flex-1 h-11 bg-surface border border-border text-text-secondary rounded-lg font-label text-label hover:bg-surface-container">ยกเลิก</button>
+                            <button type="submit" class="flex-1 h-11 bg-primary text-on-primary rounded-lg font-label text-label hover:bg-primary-hover font-bold">ยืนยันและสั่งซื้อ</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            modal.querySelector('#cust-cancel').addEventListener('click', () => modal.remove());
+            modal.querySelector('#cust-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = modal.querySelector('#cust-email').value.trim();
+                const name = modal.querySelector('#cust-name').value.trim();
+                if (email && name) {
+                    store.setCustomer(email, name);
+                    modal.remove();
+                    if (onSuccess) onSuccess();
+                }
+            });
+        }
+
+        async function processCheckout() {
+            const checkoutBtn = container.querySelector('#checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.disabled = true;
+                checkoutBtn.innerHTML = `
+                    <span class="material-symbols-outlined animate-spin text-[20px]">sync</span>
+                    กำลังส่งออเดอร์...
+                `;
+            }
+
+            const order = await store.checkout();
+            if (order) {
+                showSuccessModal(order);
+            }
+        }
+
+        function showSuccessModal(order) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+            modal.innerHTML = `
+                <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 border border-border text-center">
+                    <div class="w-16 h-16 bg-secondary-container rounded-full flex items-center justify-center mx-auto mb-4 text-on-secondary-container shadow-sm">
+                        <span class="material-symbols-outlined text-[40px]">check_circle</span>
+                    </div>
+                    <span class="bg-secondary-container text-on-secondary-container font-bold text-xs px-3 py-1 rounded-full inline-block mb-2">สั่งซื้อสำเร็จแล้ว</span>
+                    <h3 class="font-h1 text-h1 text-text-primary mb-1">คิวของคุณ</h3>
+                    <div class="my-4 py-4 px-6 bg-surface-container-low border border-border rounded-xl">
+                        <div class="font-display text-4xl font-extrabold text-primary">${order.queue}</div>
+                        <div class="text-caption text-text-secondary mt-1">เลขออเดอร์: ${order.id}</div>
+                    </div>
+                    <div class="text-left bg-surface-variant p-3 rounded-lg text-caption text-text-secondary mb-5 space-y-1">
+                        <div>👤 ลูกค้า: <strong>${order.customer_name}</strong></div>
+                        <div>✉️ อีเมล: <strong>${order.customer_email}</strong></div>
+                        <div>💰 ยอดรวม: <strong class="text-primary text-sm">฿${order.total.toFixed(2)}</strong></div>
+                    </div>
+                    <p class="text-body-sm text-text-secondary mb-6">
+                        ข้อมูลของคุณถูกส่งไปยังห้องครัวและบันทึกลงระบบ Google Sheets เรียบร้อยแล้ว กรุณารอเรียกคิวที่หน้าร้านครับ
+                    </p>
+                    <button id="finish-btn" class="w-full h-12 bg-primary text-on-primary font-bold rounded-xl hover:bg-primary-hover transition-colors shadow-md">
+                        กลับไปหน้าเมนูเครื่องดื่ม
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            modal.querySelector('#finish-btn').addEventListener('click', () => {
+                modal.remove();
+                store.navigate('menu');
             });
         }
     }
@@ -1052,6 +1145,10 @@ function renderKDS() {
                                     <span class="font-dimensions text-dimensions font-bold text-primary text-xl">${ordNum}</span>
                                     <span class="font-dimensions text-dimensions text-error">${ordTime}</span>
                                 </div>
+                                <div class="text-[11px] text-text-secondary mb-2 bg-surface-container-low p-2 rounded flex justify-between">
+                                    <span>👤 <strong>${order.customer_name || 'ลูกค้าทั่วไป'}</strong></span>
+                                    <span>✉️ ${order.customer_email || '-'}</span>
+                                </div>
                                 <div class="border-t border-border pt-xs mb-md">
                                     ${items.map(item => `
                                         <div class="flex justify-between items-center py-base font-product-name text-product-name text-on-surface">
@@ -1096,6 +1193,10 @@ function renderKDS() {
                                 <div class="flex justify-between items-start mb-xs">
                                     <span class="font-dimensions text-dimensions font-bold text-primary text-xl">${ordNum}</span>
                                     <span class="font-dimensions text-dimensions text-text-secondary">${ordTime}</span>
+                                </div>
+                                <div class="text-[11px] text-text-secondary mb-2 bg-surface-container-low p-2 rounded flex justify-between">
+                                    <span>👤 <strong>${order.customer_name || 'ลูกค้าทั่วไป'}</strong></span>
+                                    <span>✉️ ${order.customer_email || '-'}</span>
                                 </div>
                                 <div class="border-t border-border pt-xs mb-md">
                                     ${items.map(item => `
@@ -1283,7 +1384,6 @@ function renderLogin() {
 }
 
 
-
 /* --- js/views/Menu.js --- */
 
 function renderMenu() {
@@ -1415,7 +1515,6 @@ function renderMenu() {
 
     return container;
 }
-
 
 
 /* --- js/views/POS.js --- */
@@ -1758,7 +1857,6 @@ function renderProductModal(product, onClose) {
 }
 
 
-
 /* --- js/app.js --- */
 
 class App {
@@ -1829,5 +1927,4 @@ if (document.readyState === 'loading') {
 } else {
     startApp();
 }
-
 

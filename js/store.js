@@ -4,6 +4,67 @@ const getClient = () => (typeof getSupabase !== 'undefined' ? getSupabase() : nu
 // Google Apps Script Web App URL for syncing orders to Google Sheets
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyAbWrvkNrfQFg3h9txk0e1r_fLTYNw1qwTFZJiwWhdMCpIpMkCUDstiQFaNefstanaYg/exec';
 
+function playNewOrderSound() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const now = ctx.currentTime;
+        
+        // Bell note 1 (E5)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(659.25, now);
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start(now);
+        osc1.stop(now + 0.5);
+        
+        // Bell note 2 (B5)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(987.77, now + 0.15);
+        gain2.gain.setValueAtTime(0.3, now + 0.15);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(now + 0.15);
+        osc2.stop(now + 0.8);
+    } catch (e) {
+        console.warn('Audio chime error:', e);
+    }
+}
+
+function showNewOrderToast(order) {
+    try {
+        const existing = document.getElementById('order-alert-toast');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.id = 'order-alert-toast';
+        toast.className = 'fixed top-4 right-4 z-[9999] bg-primary text-on-primary border-2 border-secondary-container shadow-2xl rounded-2xl p-4 flex items-center gap-3 animate-bounce max-w-sm';
+        toast.innerHTML = `
+            <span class="material-symbols-outlined text-secondary-container text-[36px]">notifications_active</span>
+            <div>
+                <h4 class="font-bold text-sm text-secondary-container">มีออเดอร์ใหม่เข้ามา!</h4>
+                <p class="text-xs text-white">คิว: <span class="font-bold text-base text-white">${order.queue || order.queue_number}</span> (${order.customer_name || 'ลูกค้า'})</p>
+                <p class="text-[11px] text-white/70">ยอดรวม: ฿${(order.total || order.total_amount || 0).toFixed(2)}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" class="ml-auto text-white/60 hover:text-white p-1">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => { if (toast.parentElement) toast.remove(); }, 6000);
+    } catch (e) {
+        console.warn('Toast display error:', e);
+    }
+}
+
 async function syncOrderToGoogleSheets(order) {
     try {
         const items = (order.items || []).map(item => ({
@@ -19,16 +80,18 @@ async function syncOrderToGoogleSheets(order) {
             action: 'addOrder',
             orderNumber: order.id,
             queueNumber: order.queue,
+            customerEmail: order.customer_email || localStorage.getItem('customer_email') || '-',
+            customerName: order.customer_name || localStorage.getItem('customer_name') || 'ลูกค้าทั่วไป',
             items: items,
             total: order.total,
             status: order.status,
             timestamp: new Date().toISOString()
         };
 
-        const response = await fetch(GAS_WEB_APP_URL, {
+        await fetch(GAS_WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify(payload)
         });
 
@@ -38,12 +101,33 @@ async function syncOrderToGoogleSheets(order) {
     }
 }
 
+async function syncOrderStatusToGoogleSheets(orderNumber, status) {
+    try {
+        await fetch(GAS_WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({
+                action: 'updateStatus',
+                orderNumber: orderNumber,
+                status: status
+            })
+        });
+    } catch (err) {
+        console.warn('Error updating status in Google Sheets:', err);
+    }
+}
+
+let staffPollingInterval = null;
+
 export const store = {
     state: {
         cart: [],
         orders: [], // For KDS
         currentRoute: 'menu', // 'menu', 'cart', 'admin', 'pos', 'kds', 'login'
         isAuthenticated: localStorage.getItem('staff_auth') === 'true',
+        customerEmail: localStorage.getItem('customer_email') || '',
+        customerName: localStorage.getItem('customer_name') || '',
         pendingRoute: null
     },
     listeners: [],
@@ -59,6 +143,14 @@ export const store = {
         this.listeners.forEach(listener => listener(this.state));
     },
     
+    setCustomer(email, name) {
+        this.state.customerEmail = email;
+        this.state.customerName = name;
+        localStorage.setItem('customer_email', email);
+        localStorage.setItem('customer_name', name);
+        this.notify();
+    },
+
     verifyPasscode(passcode) {
         const STAFF_PASSCODE = '11333355555';
         if (passcode === STAFF_PASSCODE) {
@@ -75,6 +167,10 @@ export const store = {
     logoutStaff() {
         this.state.isAuthenticated = false;
         localStorage.removeItem('staff_auth');
+        if (staffPollingInterval) {
+            clearInterval(staffPollingInterval);
+            staffPollingInterval = null;
+        }
         this.navigate('menu');
     },
 
@@ -86,6 +182,22 @@ export const store = {
         } else {
             this.state.currentRoute = route;
         }
+        
+        // Start background polling when entering staff views so new orders pop up immediately
+        if (['admin', 'pos', 'kds'].includes(this.state.currentRoute)) {
+            if (!staffPollingInterval) {
+                fetchOrders();
+                staffPollingInterval = setInterval(() => {
+                    fetchOrders();
+                }, 4000);
+            }
+        } else {
+            if (staffPollingInterval) {
+                clearInterval(staffPollingInterval);
+                staffPollingInterval = null;
+            }
+        }
+
         this.notify();
     },
     
@@ -139,11 +251,6 @@ export const store = {
         return this.state.cart.reduce((count, item) => count + item.quantity, 0);
     },
     
-    navigate(route) {
-        this.state.currentRoute = route;
-        this.notify();
-    },
-    
     async checkout() {
         if (this.state.cart.length === 0) return null;
         
@@ -151,103 +258,30 @@ export const store = {
         const totalAmount = this.getCartTotal();
         const orderNum = 'ORD-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.floor(1000 + Math.random() * 9000);
         const queueNum = 'A' + Math.floor(100 + Math.random() * 900);
+        const custEmail = this.state.customerEmail || localStorage.getItem('customer_email') || '-';
+        const custName = this.state.customerName || localStorage.getItem('customer_name') || 'ลูกค้าทั่วไป';
         
         const newOrder = {
             id: orderNum,
+            order_number: orderNum,
             queue: queueNum,
+            queue_number: queueNum,
+            customer_email: custEmail,
+            customer_name: custName,
             items: cartItems,
             total: totalAmount,
+            total_amount: totalAmount,
             status: 'PENDING', // 'PENDING', 'PREPARING', 'COMPLETED'
+            order_status: 'PENDING',
             timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         };
         
-        this.state.orders.push(newOrder);
+        // Add to front of orders
+        this.state.orders.unshift(newOrder);
         this.state.cart = []; // Empty cart
         this.notify();
         
-        // Insert into Supabase (Relational Database Inserts)
-        const client = getClient();
-        if (client) {
-            try {
-                // 1. Insert into orders
-                const { data: orderData, error: orderError } = await client
-                    .from('orders')
-                    .insert([
-                        {
-                            order_number: orderNum,
-                            queue_number: queueNum,
-                            total_amount: totalAmount,
-                            order_status: 'PENDING',
-                            payment_status: 'PENDING',
-                            estimated_waiting_time: 10
-                        }
-                    ])
-                    .select();
-                
-                if (orderError) throw orderError;
-                if (orderData && orderData.length > 0) {
-                    const orderUuid = orderData[0].id;
-                    newOrder.db_id = orderUuid; // Cache the UUID key locally
-                    
-                    // 2. Insert into order_details (bulk insert)
-                    const detailsToInsert = cartItems.map(item => {
-                        // Find matching product UUID from products state
-                        let prodId = item.id;
-                        const match = products.find(p => p.name === item.name || p.id === item.id);
-                        if (match) prodId = match.id;
-                        
-                        return {
-                            order_id: orderUuid,
-                            product_id: prodId,
-                            quantity: item.quantity,
-                            sweetness_level: item.options && item.options.sweetness ? `${item.options.sweetness}%` : '100%',
-                            unit_price: item.price,
-                            subtotal_price: (item.finalPrice || item.price) * item.quantity,
-                            note: item.options && item.options.notes ? item.options.notes : null
-                        };
-                    });
-                    
-                    const { data: detailsData, error: detailsError } = await client
-                        .from('order_details')
-                        .insert(detailsToInsert)
-                        .select();
-                        
-                    if (detailsError) throw detailsError;
-                    
-                    // 3. Insert into order_toppings (if any)
-                    const toppingsToInsert = [];
-                    cartItems.forEach((item, index) => {
-                        if (item.options && item.options.toppings && item.options.toppings.length > 0) {
-                            const detailRow = detailsData[index];
-                            if (detailRow) {
-                                item.options.toppings.forEach(toppingName => {
-                                    const toppingProduct = products.find(p => p.name.toLowerCase() === toppingName.toLowerCase() || p.id === toppingName);
-                                    if (toppingProduct) {
-                                        toppingsToInsert.push({
-                                            order_detail_id: detailRow.id,
-                                            topping_product_id: toppingProduct.id,
-                                            quantity: 1,
-                                            price_per_unit: toppingProduct.price || 0.30
-                                        });
-                                    }
-                                });
-                            }
-                        }
-                    });
-                    
-                    if (toppingsToInsert.length > 0) {
-                        const { error: toppingsError } = await client
-                            .from('order_toppings')
-                            .insert(toppingsToInsert);
-                        if (toppingsError) throw toppingsError;
-                    }
-                }
-            } catch (err) {
-                console.error('Error saving order relationally to Supabase:', err);
-            }
-        }
-        
-        // Sync to Google Sheets (ส่งข้อมูลออเดอร์ไปบันทึกใน Google Sheets ด้วย)
+        // Sync to Google Sheets (บันทึกลง Google Sheets ทันที)
         syncOrderToGoogleSheets(newOrder);
         
         return newOrder;
@@ -260,24 +294,8 @@ export const store = {
             order.order_status = newStatus;
             this.notify();
             
-            // Sync with Supabase
-            const client = getClient();
-            if (client) {
-                // Update both potential column names (status or order_status)
-                const updatePayload = {
-                    status: newStatus,
-                    order_status: newStatus
-                };
-                
-                // Match either id, order_number or db_id matching orderId
-                const matchId = order.db_id || orderId;
-                client.from('orders')
-                    .update(updatePayload)
-                    .or(`id.eq.${matchId},order_number.eq.${orderId}`)
-                    .then(({ error }) => {
-                        if (error) console.error('Error updating order status in Supabase:', error);
-                    });
-            }
+            // Sync status update to Google Sheets
+            syncOrderStatusToGoogleSheets(order.id || order.order_number, newStatus);
         }
     }
 };
@@ -400,65 +418,29 @@ export async function fetchProducts() {
 }
 
 export async function fetchOrders() {
-    const client = getClient();
-    if (client) {
-        try {
-            const { data, error } = await client
-                .from('orders')
-                .select(`
-                    *,
-                    order_details (
-                        *,
-                        product:products ( name ),
-                        order_toppings (
-                            *,
-                            topping_product:products ( name )
-                        )
-                    )
-                `);
+    try {
+        const response = await fetch(`${GAS_WEB_APP_URL}?action=getOrders`);
+        if (response.ok) {
+            const result = await response.json();
+            if (result && result.status === 'success' && Array.isArray(result.data)) {
+                const incomingOrders = result.data;
+                const oldIds = new Set(store.state.orders.map(o => o.id || o.order_number));
                 
-            if (!error && data) {
-                const mappedOrders = data.map(order => {
-                    const items = (order.order_details || []).map(detail => {
-                        const toppings = (detail.order_toppings || []).map(topping => {
-                            const tp = topping.topping_product || topping.products || topping.product;
-                            return tp ? tp.name : 'Unknown Topping';
-                        });
-                        
-                        const prod = detail.product || detail.products;
-                        const prodName = prod ? prod.name : 'Unknown Drink';
-                        
-                        return {
-                            id: detail.product_id,
-                            name: prodName,
-                            quantity: detail.quantity,
-                            price: Number(detail.unit_price),
-                            finalPrice: Number(detail.subtotal_price) / detail.quantity,
-                            options: {
-                                sweetness: parseFloat(detail.sweetness_level) || 100,
-                                toppings: toppings,
-                                notes: detail.note
-                            }
-                        };
-                    });
-                    
-                    return {
-                        id: order.order_number,
-                        db_id: order.id,
-                        queue: order.queue_number,
-                        items: items,
-                        total: Number(order.total_amount),
-                        status: order.order_status,
-                        timestamp: order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A'
-                    };
-                });
+                // If a new order is detected while on staff screen, trigger chime & toast!
+                const hasNew = incomingOrders.some(o => !oldIds.has(o.id || o.order_number));
+                if (hasNew && store.state.orders.length > 0) {
+                    playNewOrderSound();
+                    const newest = incomingOrders[0];
+                    if (newest) showNewOrderToast(newest);
+                }
                 
-                store.state.orders = mappedOrders;
+                store.state.orders = incomingOrders;
                 store.notify();
+                return;
             }
-        } catch (err) {
-            console.warn('Error fetching orders:', err);
         }
+    } catch (err) {
+        console.warn('Google Sheets fetchOrders error:', err);
     }
 }
 

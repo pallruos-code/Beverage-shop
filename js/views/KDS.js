@@ -47,6 +47,10 @@ export function renderKDS() {
                                     <span class="font-dimensions text-dimensions font-bold text-primary text-xl">${ordNum}</span>
                                     <span class="font-dimensions text-dimensions text-error">${ordTime}</span>
                                 </div>
+                                <div class="text-[11px] text-text-secondary mb-2 bg-surface-container-low p-2 rounded flex justify-between">
+                                    <span>👤 <strong>${order.customer_name || 'ลูกค้าทั่วไป'}</strong></span>
+                                    <span>✉️ ${order.customer_email || '-'}</span>
+                                </div>
                                 <div class="border-t border-border pt-xs mb-md">
                                     ${items.map(item => `
                                         <div class="flex justify-between items-center py-base font-product-name text-product-name text-on-surface">
@@ -91,6 +95,10 @@ export function renderKDS() {
                                 <div class="flex justify-between items-start mb-xs">
                                     <span class="font-dimensions text-dimensions font-bold text-primary text-xl">${ordNum}</span>
                                     <span class="font-dimensions text-dimensions text-text-secondary">${ordTime}</span>
+                                </div>
+                                <div class="text-[11px] text-text-secondary mb-2 bg-surface-container-low p-2 rounded flex justify-between">
+                                    <span>👤 <strong>${order.customer_name || 'ลูกค้าทั่วไป'}</strong></span>
+                                    <span>✉️ ${order.customer_email || '-'}</span>
                                 </div>
                                 <div class="border-t border-border pt-xs mb-md">
                                     ${items.map(item => `

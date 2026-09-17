@@ -121,6 +121,7 @@ export function renderAdmin() {
                                 <thead>
                                     <tr class="bg-surface-container-low border-b border-border">
                                         <th class="p-md font-label text-label text-outline whitespace-nowrap">รหัสออเดอร์</th>
+                                        <th class="p-md font-label text-label text-outline whitespace-nowrap">ลูกค้า / โต๊ะ</th>
                                         <th class="p-md font-label text-label text-outline whitespace-nowrap">เวลา</th>
                                         <th class="p-md font-label text-label text-outline whitespace-nowrap">รายการ</th>
                                         <th class="p-md font-label text-label text-outline whitespace-nowrap">จำนวนเงิน</th>
@@ -133,10 +134,14 @@ export function renderAdmin() {
                                         const ordTime = order.timestamp || (order.created_at ? new Date(order.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A');
                                         const ordTotal = order.total !== undefined ? order.total : (order.total_amount !== undefined ? Number(order.total_amount) : 0);
                                         const ordStatus = order.status || order.order_status || 'PENDING';
+                                        const custName = order.customer_name || 'ลูกค้าทั่วไป';
+                                        const custEmail = order.customer_email || '-';
                                         
                                         let itemsText = 'ไม่มีรายละเอียด';
                                         if (order.items && order.items.length > 0) {
                                             itemsText = order.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
+                                        } else if (order.itemsSummary) {
+                                            itemsText = order.itemsSummary;
                                         }
                                         
                                         let statusBadge = '';
@@ -153,8 +158,12 @@ export function renderAdmin() {
                                         return `
                                             <tr class="hover:bg-surface-container-lowest transition-colors">
                                                 <td class="p-md font-dimensions text-body-sm text-primary font-bold">#${ordNum}</td>
+                                                <td class="p-md font-body-sm text-body-sm">
+                                                    <div class="font-bold text-primary">${custName}</div>
+                                                    <div class="text-[11px] text-text-secondary">${custEmail}</div>
+                                                </td>
                                                 <td class="p-md font-dimensions text-body-sm text-on-surface-variant">${ordTime}</td>
-                                                <td class="p-md font-body-sm text-body-sm text-on-surface">${itemsText}</td>
+                                                <td class="p-md font-body-sm text-body-sm text-on-surface max-w-xs truncate" title="${itemsText}">${itemsText}</td>
                                                 <td class="p-md font-dimensions text-body-sm text-on-surface">฿${ordTotal.toFixed(2)}</td>
                                                 <td class="p-md">
                                                     ${statusBadge}
@@ -162,7 +171,7 @@ export function renderAdmin() {
                                             </tr>
                                         `;
                                     }).join('')}
-                                    ${ordersList.length === 0 ? '<tr><td colspan="5" class="p-md text-center text-outline font-body-sm">ไม่มีคำสั่งซื้อที่ค้างอยู่</td></tr>' : ''}
+                                    ${ordersList.length === 0 ? '<tr><td colspan="6" class="p-md text-center text-outline font-body-sm">ไม่มีคำสั่งซื้อที่ค้างอยู่</td></tr>' : ''}
                                 </tbody>
                             </table>
                         </div>
