@@ -1,26 +1,6 @@
-/* --- js/supabase.js --- */
-
-// supabase.js
-const SUPABASE_URL = 'https://lpwljgptpvtwgdsizvbg.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_8gMezicicJYtIZk-dS27KQ_tDm_Co7z';
-
-function getSupabase() {
-    if (window.supabaseClientInstance) {
-        return window.supabaseClientInstance;
-    }
-    if (window.supabase) {
-        window.supabaseClientInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        return window.supabaseClientInstance;
-    }
-    return null;
-}
-
-
 /* --- js/store.js --- */
 
 // store.js
-const getClient = () => (typeof getSupabase !== 'undefined' ? getSupabase() : null);
-
 // Google Apps Script Web App URL for syncing orders to Google Sheets
 const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyAbWrvkNrfQFg3h9txk0e1r_fLTYNw1qwTFZJiwWhdMCpIpMkCUDstiQFaNefstanaYg/exec';
 
@@ -395,45 +375,7 @@ const defaultProducts = [
 let products = [...defaultProducts];
 
 async function fetchProducts() {
-    const client = getClient();
-    if (client) {
-        try {
-            // 2-second timeout promise to prevent mobile 4G/5G hanging
-            const fetchPromise = client.from('products').select('*');
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Fetch timeout')), 2000)
-            );
-            
-            const { data, error } = await Promise.race([fetchPromise, timeoutPromise]);
-            
-            if (error) {
-                console.warn('Supabase fetch error, using default products:', error);
-                products = defaultProducts;
-            } else if (data && data.length > 0) {
-                const mapped = data.map((p) => {
-                    let fallbackImg = DEFAULT_IMAGES.latte;
-                    if (p.name && p.name.includes('เอสเพรสโซ่')) fallbackImg = DEFAULT_IMAGES.espresso;
-                    else if (p.name && (p.name.includes('ชา') || p.name.includes('ที'))) fallbackImg = DEFAULT_IMAGES.tea;
-                    else if (p.name && (p.name.includes('ซิตรัส') || p.name.includes('โซดา'))) fallbackImg = DEFAULT_IMAGES.refresher;
-
-                    return {
-                        ...p,
-                        category: p.category || (p.name.includes('ชา') ? 'ชา' : p.name.includes('โซดา') || p.name.includes('ซิตรัส') ? 'สดชื่น' : 'กาแฟ'),
-                        price: Number(p.price),
-                        image: (p.image && p.image.startsWith('http')) ? p.image : fallbackImg
-                    };
-                });
-                products = mapped;
-            } else {
-                products = defaultProducts;
-            }
-        } catch (e) {
-            console.warn('Network timeout or offline mode, using default products:', e);
-            products = defaultProducts;
-        }
-    } else {
-        products = defaultProducts;
-    }
+    products = [...defaultProducts];
     store.notify();
 }
 
@@ -465,30 +407,10 @@ async function fetchOrders() {
 }
 
 function subscribeToOrders() {
-    const client = getClient();
-    if (client) {
-        try {
-            client
-                .channel('schema-db-changes')
-                .on(
-                    'postgres_changes',
-                    {
-                        event: '*',
-                        schema: 'public',
-                        table: 'orders'
-                    },
-                    () => {
-                        fetchOrders();
-                    }
-                )
-                .subscribe();
-        } catch (e) {
-            console.warn('Realtime subscription skipped:', e);
-        }
-    }
+    // Orders are polled via fetchOrders() every 4s while on staff screens
 }
 
-// Call fetchProducts for menu on load (non-blocking)
+// Call fetchProducts for menu on load
 try {
     fetchProducts();
 } catch (e) {

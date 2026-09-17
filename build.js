@@ -1,8 +1,7 @@
-﻿const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 
 const files = [
-    'js/supabase.js',
     'js/store.js',
     'js/components/BottomNav.js',
     'js/components/Navbar.js',
