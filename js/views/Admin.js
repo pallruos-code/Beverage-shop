@@ -1,4 +1,4 @@
-import { store } from '../store.js';
+﻿import { store } from '../store.js';
 
 export function renderAdmin() {
     const container = document.createElement('div');
@@ -15,21 +15,56 @@ export function renderAdmin() {
     const totalOrdersCount = ordersList.length;
 
     container.innerHTML = `
-        <!-- Sidebar Navigation -->
-        <aside class="w-[260px] bg-primary flex flex-col shrink-0 h-screen border-r border-primary-hover shadow-[4px_0_12px_rgba(0,0,0,0.1)] z-20">
-            <!-- Brand / Logo -->
+        <!-- MOBILE: Backdrop -->
+        <div id="admin-backdrop" class="fixed inset-0 bg-black/50 z-30 hidden transition-opacity"></div>
+
+        <!-- MOBILE: Slide-in Drawer -->
+        <div id="admin-drawer" class="fixed top-0 left-0 h-full w-[260px] bg-primary flex flex-col z-40 shadow-2xl transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+            <div class="h-[64px] flex items-center justify-between px-lg border-b border-primary-hover">
+                <span id="admin-drawer-brand" class="font-h2 text-h2 text-secondary-container tracking-tight cursor-pointer">
+                    FikaSmart<span class="text-on-primary font-body text-body ml-base">Admin</span>
+                </span>
+                <button id="admin-drawer-close" class="text-on-primary opacity-80 hover:opacity-100 p-1 rounded-lg hover:bg-primary-hover transition-colors">
+                    <span class="material-symbols-outlined" style="font-size:22px;">close</span>
+                </button>
+            </div>
+            <nav class="flex-1 px-sm py-lg flex flex-col gap-base overflow-y-auto">
+                <a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg cursor-pointer">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                    <span class="font-label text-label">แดชบอร์ด</span>
+                </a>
+                <a id="drawer-nav-pos" class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined">point_of_sale</span>
+                    <span class="font-label text-label">จุดขาย (POS)</span>
+                </a>
+                <a id="drawer-nav-kds" class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined">receipt_long</span>
+                    <span class="font-label text-label">หน้าจอครัว (KDS)</span>
+                </a>
+                <a class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span class="font-label text-label">สินค้า</span>
+                </a>
+            </nav>
+            <div class="p-lg border-t border-primary-hover flex items-center gap-md">
+                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-h3 text-h3">M</div>
+                <div class="flex flex-col">
+                    <span class="font-label text-label text-on-primary">Manager</span>
+                    <span class="font-caption text-caption text-on-primary opacity-70">สาขาหลัก</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- DESKTOP: Static Sidebar -->
+        <aside class="hidden md:flex w-[260px] bg-primary flex-col shrink-0 h-screen border-r border-primary-hover shadow-[4px_0_12px_rgba(0,0,0,0.1)] z-20">
             <div class="h-[80px] flex items-center px-lg border-b border-primary-hover cursor-pointer" id="admin-brand">
                 <span class="font-h2 text-h2 text-secondary-container tracking-tight">FikaSmart<span class="text-on-primary font-body text-body ml-base">Admin</span></span>
             </div>
-            
-            <!-- Nav Links -->
             <nav class="flex-1 px-sm py-lg flex flex-col gap-base overflow-y-auto">
-                <!-- Active Link -->
                 <a class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg transition-colors group cursor-pointer">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
                     <span class="font-label text-label">แดชบอร์ด</span>
                 </a>
-                <!-- Inactive Links -->
                 <a id="admin-nav-pos" class="flex items-center gap-md px-md py-sm text-on-primary opacity-80 hover:opacity-100 hover:bg-primary-hover rounded-lg transition-colors group cursor-pointer">
                     <span class="material-symbols-outlined">point_of_sale</span>
                     <span class="font-label text-label">จุดขาย (POS)</span>
@@ -43,12 +78,8 @@ export function renderAdmin() {
                     <span class="font-label text-label">สินค้า</span>
                 </a>
             </nav>
-            
-            <!-- User Profile minimal -->
             <div class="p-lg border-t border-primary-hover flex items-center gap-md">
-                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-h3 text-h3">
-                    M
-                </div>
+                <div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-h3 text-h3">M</div>
                 <div class="flex flex-col">
                     <span class="font-label text-label text-on-primary">Manager</span>
                     <span class="font-caption text-caption text-on-primary opacity-70">สาขาหลัก</span>
@@ -56,27 +87,29 @@ export function renderAdmin() {
             </div>
         </aside>
         
-        <!-- Main Content Area -->
+        <!-- MAIN CONTENT -->
         <main class="flex-1 flex flex-col h-screen overflow-hidden bg-background relative">
-            <!-- Top Header Area -->
-            <header class="h-[80px] bg-surface border-b border-border flex items-center justify-between px-xl shrink-0 z-10 shadow-sm">
-                <h1 class="font-h1 text-h1 text-primary">ภาพรวมระบบ</h1>
+            <header class="h-[64px] md:h-[80px] bg-surface border-b border-border flex items-center justify-between px-md md:px-xl shrink-0 z-10 shadow-sm">
                 <div class="flex items-center gap-md">
-                    <button id="admin-logout-btn" class="h-[44px] px-md bg-error/10 hover:bg-error/20 text-error font-label text-label rounded-DEFAULT flex items-center gap-xs transition-colors border border-error/20" title="ออกจากระบบหลังร้าน">
-                        <span class="material-symbols-outlined" style="font-size: 20px;">lock</span>
-                        ล็อคระบบ
+                    <button id="admin-hamburger" class="md:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-surface-container-low transition-colors text-primary">
+                        <span class="material-symbols-outlined" style="font-size:26px;">menu</span>
                     </button>
-                    <button id="go-to-shop" class="h-[44px] px-lg bg-primary hover:bg-primary-hover text-on-primary font-label text-label rounded-DEFAULT flex items-center gap-xs transition-colors">
+                    <h1 class="font-h1 text-h1 text-primary">ภาพรวมระบบ</h1>
+                </div>
+                <div class="flex items-center gap-sm md:gap-md">
+                    <button id="admin-logout-btn" class="h-[40px] md:h-[44px] px-sm md:px-md bg-error/10 hover:bg-error/20 text-error font-label text-label rounded-DEFAULT flex items-center gap-xs transition-colors border border-error/20" title="ออกจากระบบหลังร้าน">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">lock</span>
+                        <span class="hidden sm:inline">ล็อคระบบ</span>
+                    </button>
+                    <button id="go-to-shop" class="h-[40px] md:h-[44px] px-sm md:px-lg bg-primary hover:bg-primary-hover text-on-primary font-label text-label rounded-DEFAULT flex items-center gap-xs transition-colors">
                         <span class="material-symbols-outlined" style="font-size: 20px;">storefront</span>
-                        กลับไปหน้าร้าน
+                        <span class="hidden sm:inline">กลับไปหน้าร้าน</span>
                     </button>
                 </div>
             </header>
             
-            <!-- Scrollable Canvas -->
-            <div class="flex-1 overflow-y-auto p-xl">
+            <div class="flex-1 overflow-y-auto p-md md:p-xl">
                 <div class="max-w-container-max mx-auto flex flex-col gap-xl">
-                    <!-- KPI Summary Cards (Bento Style Row 1) -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
                         <div class="bg-surface border border-border rounded-lg p-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] flex flex-col relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1 bg-secondary-container"></div>
@@ -88,7 +121,6 @@ export function renderAdmin() {
                                 <span class="font-display text-display text-primary tracking-tight">฿${totalSales.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                             </div>
                         </div>
-                        
                         <div class="bg-surface border border-border rounded-lg p-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] flex flex-col">
                             <div class="flex items-center justify-between mb-sm">
                                 <span class="font-label text-label text-outline">จำนวนคำสั่งซื้อทั้งหมด</span>
@@ -99,7 +131,6 @@ export function renderAdmin() {
                                 <span class="font-body-sm text-body-sm text-outline">ออเดอร์</span>
                             </div>
                         </div>
-                        
                         <div class="bg-surface border border-border rounded-lg p-lg shadow-[0_1px_3px_rgba(17,17,17,0.06)] flex flex-col">
                             <div class="flex items-center justify-between mb-sm">
                                 <span class="font-label text-label text-outline">เวลารอเฉลี่ย</span>
@@ -136,14 +167,12 @@ export function renderAdmin() {
                                         const ordStatus = order.status || order.order_status || 'PENDING';
                                         const custName = order.customer_name || 'ลูกค้าทั่วไป';
                                         const custEmail = order.customer_email || '-';
-                                        
                                         let itemsText = 'ไม่มีรายละเอียด';
                                         if (order.items && order.items.length > 0) {
                                             itemsText = order.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
                                         } else if (order.itemsSummary) {
                                             itemsText = order.itemsSummary;
                                         }
-                                        
                                         let statusBadge = '';
                                         if (ordStatus === 'PENDING' || ordStatus === 'new') {
                                             statusBadge = '<span class="inline-flex items-center px-2 py-1 rounded-sm bg-primary/10 text-primary font-caption text-caption">ออเดอร์ใหม่</span>';
@@ -154,7 +183,6 @@ export function renderAdmin() {
                                         } else {
                                             statusBadge = `<span class="inline-flex items-center px-2 py-1 rounded-sm bg-outline-variant text-on-surface font-caption text-caption">${ordStatus}</span>`;
                                         }
-                                        
                                         return `
                                             <tr class="hover:bg-surface-container-lowest transition-colors">
                                                 <td class="p-md font-dimensions text-body-sm text-primary font-bold">#${ordNum}</td>
@@ -165,9 +193,7 @@ export function renderAdmin() {
                                                 <td class="p-md font-dimensions text-body-sm text-on-surface-variant">${ordTime}</td>
                                                 <td class="p-md font-body-sm text-body-sm text-on-surface max-w-xs truncate" title="${itemsText}">${itemsText}</td>
                                                 <td class="p-md font-dimensions text-body-sm text-on-surface">฿${ordTotal.toFixed(2)}</td>
-                                                <td class="p-md">
-                                                    ${statusBadge}
-                                                </td>
+                                                <td class="p-md">${statusBadge}</td>
                                             </tr>
                                         `;
                                     }).join('')}
@@ -181,25 +207,41 @@ export function renderAdmin() {
         </main>
     `;
 
-    container.querySelector('#admin-brand').addEventListener('click', () => {
-        store.navigate('menu');
-    });
+    // Desktop sidebar
+    container.querySelector('#admin-brand').addEventListener('click', () => store.navigate('menu'));
+    container.querySelector('#admin-nav-pos').addEventListener('click', () => store.navigate('pos'));
+    container.querySelector('#admin-nav-kds').addEventListener('click', () => store.navigate('kds'));
 
-    container.querySelector('#admin-logout-btn').addEventListener('click', () => {
-        store.logoutStaff();
-    });
+    // Header buttons
+    container.querySelector('#admin-logout-btn').addEventListener('click', () => store.logoutStaff());
+    container.querySelector('#go-to-shop').addEventListener('click', () => store.navigate('menu'));
 
-    container.querySelector('#go-to-shop').addEventListener('click', () => {
-        store.navigate('menu');
-    });
+    // Mobile drawer
+    const hamburger   = container.querySelector('#admin-hamburger');
+    const drawer      = container.querySelector('#admin-drawer');
+    const backdrop    = container.querySelector('#admin-backdrop');
+    const drawerClose = container.querySelector('#admin-drawer-close');
+    const drawerBrand = container.querySelector('#admin-drawer-brand');
+    const drawerPos   = container.querySelector('#drawer-nav-pos');
+    const drawerKds   = container.querySelector('#drawer-nav-kds');
 
-    container.querySelector('#admin-nav-pos').addEventListener('click', () => {
-        store.navigate('pos');
-    });
+    function openDrawer() {
+        drawer.classList.remove('-translate-x-full');
+        backdrop.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+        drawer.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
 
-    container.querySelector('#admin-nav-kds').addEventListener('click', () => {
-        store.navigate('kds');
-    });
+    hamburger.addEventListener('click', openDrawer);
+    drawerClose.addEventListener('click', closeDrawer);
+    backdrop.addEventListener('click', closeDrawer);
+    drawerBrand.addEventListener('click', () => { closeDrawer(); store.navigate('menu'); });
+    drawerPos.addEventListener('click',  () => { closeDrawer(); store.navigate('pos'); });
+    drawerKds.addEventListener('click',  () => { closeDrawer(); store.navigate('kds'); });
 
     return container;
 }
