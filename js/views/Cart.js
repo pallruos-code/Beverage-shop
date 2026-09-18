@@ -196,7 +196,7 @@ export function renderCart() {
                             <p class="font-bold text-xs text-text-primary mb-1">สแกน QR Code เพื่อชำระเงิน</p>
                             <p class="text-[11px] text-text-secondary mb-3">ยอดชำระสุทธิ: <strong class="text-primary text-sm font-bold">฿${total.toFixed(2)}</strong></p>
                             <div class="bg-white p-3 rounded-xl border-2 border-border shadow-sm mb-2">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=MAEWA-CAFE-PROMPTPAY-TOTAL-${total.toFixed(2)}" alt="PromptPay QR Code" class="w-40 h-40 object-contain mx-auto" />
+                                <img src="https://promptpay.io/0647040484/${total.toFixed(2)}.png" alt="สแกนผ่านแอปธนาคาร" class="w-40 h-40 object-contain mx-auto" />
                             </div>
                             <p class="text-[10px] text-text-secondary">เปิดแอปธนาคาร สแกน QR แล้วกดยืนยันชำระเงินด้านล่าง</p>
                         </div>
